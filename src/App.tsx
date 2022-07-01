@@ -33,8 +33,8 @@ function App () {
     <>
       <AppBar />
       <Container sx={{ mt: 4 }} maxWidth='xl'>
-        <Grid container spacing={4} sx={{ flexDirection: { xs: 'column', md: 'row-reverse' } }}>
-          <Grid item xs={4} sx={{ maxWidth: '300px' }}>
+        <Grid container spacing={4} sx={{ flexDirection: { md: 'row-reverse' } }}>
+          <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' } }}>
             <Card>
               <CardHeader
                 avatar={
@@ -70,7 +70,7 @@ function App () {
                 {Object.entries(others).map(([key, value], i) => {
                   const ViewComponent = ((fields as any)[value.type] || fields.Text).ViewComponent
                   return (
-                    <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 120 }, '& th, & td': { verticalAlign: 'top' } }}>
+                    <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 100 }, '& td': { pl: 0, textAlign: 'justify' }, '& th, & td': { verticalAlign: 'top' } }}>
                       <TableCell component='th' scope='row'>{key}</TableCell>
                       <TableCell><ViewComponent value={value.value} /></TableCell>
                     </TableRow>
