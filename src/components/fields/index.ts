@@ -1,6 +1,7 @@
-import Text from './Text'
-import Number from './Number'
-import Image from './Image'
-import LiveOffice from './LiveOffice'
+import text from './Text'
+import number from './Number'
+import image from './Image'
+import liveOffice from './LiveOffice'
+import csv from './CSV'
 
-export default { Text, Number, Image, LiveOffice }
+export default { text, number, image, liveOffice, csv }
