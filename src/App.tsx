@@ -3,6 +3,9 @@ import AppBar from './components/AppBar'
 import Container from '@mui/material/Container'
 import Toolbar from '@mui/material/Toolbar'
 import Item from './components/Item'
+import Update from './components/Update'
+import { SnackbarProvider } from 'notistack'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 // const data2 = {
 //   name: '彩绘骆驼',
@@ -25,9 +28,17 @@ function App () {
     <>
       <AppBar />
       <Toolbar />
-      <Container sx={{ mt: 4 }} maxWidth='xl'>
-        <Item />
-      </Container>
+      <SnackbarProvider maxSnack={5}>
+        <Container sx={{ mt: 4 }} maxWidth='xl'>
+          <BrowserRouter>
+            <Routes>
+              <Route path='/' element={<></>} />
+              <Route path='item/:id' element={<Item />} />
+              <Route path='update/:id' element={<Update />} />
+            </Routes>
+          </BrowserRouter>
+        </Container>
+      </SnackbarProvider>
     </>
   )
 }

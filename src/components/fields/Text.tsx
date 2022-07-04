@@ -2,6 +2,7 @@
 import React from 'react'
 import Field from './Field'
 import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
 
 const components: Field<string> = {
   ViewComponent ({ value }) {
@@ -9,10 +10,17 @@ const components: Field<string> = {
       <Typography>{value}</Typography>
     )
   },
-  EditorComponent () {
+  EditorComponent ({ name, value, keyName, data }) {
     return (
-      <>
-      </>
+      <TextField
+        multiline
+        fullWidth
+        label={name}
+        maxRows={10}
+        variant='standard'
+        defaultValue={value}
+        onChange={e => (data[keyName] = e.target.value)}
+      />
     )
   }
 }
