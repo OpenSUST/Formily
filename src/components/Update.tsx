@@ -7,6 +7,7 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import Fab from '@mui/material/Fab'
+import Container from '@mui/material/Container'
 import SaveIcon from '@mui/icons-material/Save'
 import fields from './fields'
 import { CircularLoading } from './Loading'
@@ -36,7 +37,7 @@ const ItemCard: React.FC = () => {
   const [{ _id, ...others }] = items
 
   return (
-    <>
+    <Container sx={{ mt: 4 }} maxWidth='xl'>
       <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>{others.title}</Typography>
       <Table sx={{ tableLayout: 'fixed' }}>
         <TableBody>
@@ -66,7 +67,7 @@ const ItemCard: React.FC = () => {
       >
         <SaveIcon />
       </Fab>
-    </>
+    </Container>
   )
 }
 

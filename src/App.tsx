@@ -2,8 +2,10 @@ import React from 'react'
 import AppBar from './components/AppBar'
 import Container from '@mui/material/Container'
 import Toolbar from '@mui/material/Toolbar'
+import Home from './components/Home'
 import Item from './components/Item'
 import Update from './components/Update'
+import Users from './components/Users'
 import { SnackbarProvider } from 'notistack'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
@@ -25,21 +27,18 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 function App () {
   return (
-    <>
+    <BrowserRouter>
       <AppBar />
       <Toolbar />
       <SnackbarProvider maxSnack={5}>
-        <Container sx={{ mt: 4 }} maxWidth='xl'>
-          <BrowserRouter>
-            <Routes>
-              <Route path='/' element={<></>} />
-              <Route path='item/:id' element={<Item />} />
-              <Route path='update/:id' element={<Update />} />
-            </Routes>
-          </BrowserRouter>
-        </Container>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='item/:id' element={<Item />} />
+          <Route path='update/:id' element={<Update />} />
+          <Route path='users' element={<Users />} />
+        </Routes>
       </SnackbarProvider>
-    </>
+    </BrowserRouter>
   )
 }
 

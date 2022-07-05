@@ -7,6 +7,7 @@ import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
+import Container from '@mui/material/Container'
 import ItemCard from './ItemCard'
 import fields from './fields'
 import { CircularLoading } from './Loading'
@@ -31,28 +32,30 @@ const Item: React.FC = () => {
   const [{ title, description, _id, ...others }] = items
 
   return (
-    <Grid container spacing={4} sx={{ flexDirection: { md: 'row-reverse' } }}>
-      <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, padding: '0!important' }} />
-      <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, position: { md: 'fixed' } }}>
-        <ItemCard title={title} description={description} image={others.images[0]} id={id!} />
+    <Container sx={{ mt: 4 }} maxWidth='xl'>
+      <Grid container spacing={4} sx={{ flexDirection: { md: 'row-reverse' } }}>
+        <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, padding: '0!important' }} />
+        <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, position: { md: 'fixed' } }}>
+          <ItemCard title={title} description={description} image={others.images[0]} id={id!} />
+        </Grid>
+        <Grid item sx={{ flex: '1', width: 0 }}>
+          <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>{title}</Typography>
+          <Table sx={{ tableLayout: 'fixed' }}>
+            <TableBody>
+              {Object.entries(others).map(([key, value], i) => {
+                const ViewComponent = ((fields as any)[schema.dict[key]?.meta?.kind] || fields.text).ViewComponent
+                return (
+                  <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 100 }, '& td': { pl: 0, textAlign: 'justify' }, '& th, & td': { verticalAlign: 'top' } }}>
+                    <TableCell component='th' scope='row'>{key}</TableCell>
+                    <TableCell><ViewComponent value={value} /></TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </Grid>
       </Grid>
-      <Grid item sx={{ flex: '1', width: 0 }}>
-        <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>{title}</Typography>
-        <Table sx={{ tableLayout: 'fixed' }}>
-          <TableBody>
-            {Object.entries(others).map(([key, value], i) => {
-              const ViewComponent = ((fields as any)[schema.dict[key]?.meta?.kind] || fields.text).ViewComponent
-              return (
-                <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 100 }, '& td': { pl: 0, textAlign: 'justify' }, '& th, & td': { verticalAlign: 'top' } }}>
-                  <TableCell component='th' scope='row'>{key}</TableCell>
-                  <TableCell><ViewComponent value={value} /></TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </Grid>
-    </Grid>
+    </Container>
   )
 }
 

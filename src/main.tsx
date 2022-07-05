@@ -11,7 +11,8 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { zhCN as dataGridLang } from '@mui/x-data-grid'
 import { zhCN } from '@mui/material/locale'
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client'
+import { setContext } from '@apollo/client/link/context'
 
 const theme = createTheme(
   {},
@@ -19,8 +20,16 @@ const theme = createTheme(
   zhCN
 )
 
+const httpLink = createHttpLink({ uri: 'http://106.52.43.12:9977/' })
+const authLink = setContext((_, { headers }) => ({
+  headers: {
+    ...headers,
+    authorization: localStorage.getItem('token')
+  }
+}))
+
 const client = new ApolloClient({
-  uri: 'http://106.52.43.12:9977/',
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache()
 })
 
