@@ -53,7 +53,13 @@ query {
 
 export const AUTH = gql`
 query Request ($username: String!, $password: String!)  {
-  user { auth (username: $username, password: $password) }
+  user {
+    auth (username: $username, password: $password) {
+      token
+      username
+      roles
+    }
+  }
 }`
 
 export const LOGOUT = gql`

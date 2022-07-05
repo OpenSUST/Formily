@@ -128,7 +128,7 @@ const ResponsiveAppBar = () => {
                     localStorage.removeItem('username')
                     localStorage.removeItem('isAdmin')
                     enqueueSnackbar('操作成功!', { variant: 'success' })
-                    setTimeout(() => location.reload(), 3000)
+                    setTimeout(() => location.reload(), 500)
                   })
                 }}
               >
@@ -167,13 +167,13 @@ const ResponsiveAppBar = () => {
               setOpen(false)
               client.query({ query: AUTH, variables: loginData }).then(it => {
                 if (it.error) throw it.error
-                const { auth, username, roles } = it.data.user
-                if (!auth) throw new Error('账号或密码错误!')
+                if (!it.data.user.auth) throw new Error('账号或密码错误!')
                 enqueueSnackbar('登录成功!', { variant: 'success' })
-                localStorage.setItem('token', auth)
+                const { token, username, roles } = it.data.user.auth
+                localStorage.setItem('token', token)
                 localStorage.setItem('username', username)
-                localStorage.setItem('isAdmin', (roles || []).includes('ADMIN'))
-                setTimeout(() => location.reload(), 3000)
+                localStorage.setItem('isAdmin', roles.includes('ADMIN'))
+                setTimeout(() => location.reload(), 500)
               }).catch(e => {
                 console.error(e)
                 enqueueSnackbar('登录失败, 可能是因为账号或密码错误.', { variant: 'error' })
