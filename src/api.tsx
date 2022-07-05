@@ -1,5 +1,10 @@
 import { gql } from '@apollo/client'
 
+export const token = localStorage.getItem('token') || ''
+export const username = localStorage.getItem('username') || ''
+export const isAdmin = localStorage.getItem('isAdmin') === 'true'
+export const isLogin = !!token
+
 export const GET_DATA = gql`
 query Request ($id: String!) {
   item {
@@ -37,11 +42,21 @@ query Request ($username: String!, $password: String!) {
 }`
 
 export const GET_ALL_COUNT = gql`
-query{
+query {
   user {
     count
   }
   item {
     count
   }
+}`
+
+export const AUTH = gql`
+query Request ($username: String!, $password: String!)  {
+  user { auth (username: $username, password: $password) }
+}`
+
+export const LOGOUT = gql`
+query {
+  user { logout }
 }`

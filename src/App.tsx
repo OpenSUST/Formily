@@ -1,13 +1,15 @@
 import React from 'react'
 import AppBar from './components/AppBar'
-import Container from '@mui/material/Container'
+import Button from '@mui/material/Button'
 import Toolbar from '@mui/material/Toolbar'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
 import Home from './components/Home'
 import Item from './components/Item'
 import Update from './components/Update'
 import Users from './components/Users'
 import { SnackbarProvider } from 'notistack'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
 
 // const data2 = {
 //   name: '彩绘骆驼',
@@ -25,18 +27,51 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 //   }
 // }
 
+const JumpButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
+  const navigate = useNavigate()
+  return (
+    <Button
+      sx={{ mt: 4 }}
+      variant='contained'
+      onClick={() => {
+        navigate('/')
+        onClick()
+      }}
+    >
+      回到主页
+    </Button>
+  )
+}
+
+class ErrorBoundary extends React.Component<{ children: any }> {
+  state = { error: '' }
+  public static getDerivedStateFromError (error: any) { return { error: error?.message || error + '' } }
+  public render () {
+    if (!this.state.error) return this.props.children
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>发生了错误!</Typography>
+        <Typography>可能是因为网络问题或你没有权限, 错误信息: {this.state.error}</Typography>
+        <JumpButton onClick={() => this.setState({ error: '' })} />
+      </Container>
+    )
+  }
+}
+
 function App () {
   return (
     <BrowserRouter>
-      <AppBar />
-      <Toolbar />
       <SnackbarProvider maxSnack={5}>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='item/:id' element={<Item />} />
-          <Route path='update/:id' element={<Update />} />
-          <Route path='users' element={<Users />} />
-        </Routes>
+        <AppBar />
+        <Toolbar />
+        <ErrorBoundary>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='item/:id' element={<Item />} />
+            <Route path='update/:id' element={<Update />} />
+            <Route path='users' element={<Users />} />
+          </Routes>
+        </ErrorBoundary>
       </SnackbarProvider>
     </BrowserRouter>
   )
