@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import Schema from 'schemastery'
 
 import Typography from '@mui/material/Typography'
@@ -10,6 +10,7 @@ import Fab from '@mui/material/Fab'
 import Container from '@mui/material/Container'
 import SaveIcon from '@mui/icons-material/Save'
 import fields from './fields'
+import Field from './fields/Field'
 import { CircularLoading } from './Loading'
 import { GET_DATA, UPDATE_DATA } from '../api'
 
@@ -26,6 +27,8 @@ const ItemCard: React.FC = () => {
 
   const schema = useMemo(() => data && data.item.get.schema && new Schema(data.item.get.schema), [data && data.item.get.schema])
   const formData = useRef<Record<string, any>>({})
+  const pendingList = useRef<(() => Promise<void>)[]>([])
+  const onSubmit = useCallback((fn: () => Promise<void>) => { pendingList.current.push(fn) }, [])
 
   if (error) throw error
   if (loading || !schema) return <CircularLoading loading />
@@ -42,11 +45,19 @@ const ItemCard: React.FC = () => {
       <Table sx={{ tableLayout: 'fixed' }}>
         <TableBody>
           {Object.entries(others).map(([key, value], i) => {
-            const EditorComponent = ((fields as any)[schema.dict[key]?.meta?.kind] || fields.text).EditorComponent
+            const EditorComponent = ((fields as any)[schema.dict[key]?.meta?.kind] || fields.text).EditorComponent as Field<any>['EditorComponent']
             return (
               <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 100 }, '& td': { pl: 0, textAlign: 'justify' } }}>
                 <TableCell component='th' scope='row'>{key}</TableCell>
-                <TableCell><EditorComponent value={value} name={key} keyName={key} data={formData.current} /></TableCell>
+                <TableCell>
+                  <EditorComponent
+                    value={value}
+                    name={key}
+                    keyName={key}
+                    data={formData.current}
+                    onSubmit={onSubmit}
+                  />
+                </TableCell>
               </TableRow>
             )
           })}
@@ -56,14 +67,17 @@ const ItemCard: React.FC = () => {
         color='primary'
         aria-label='save'
         sx={{ position: 'fixed', bottom: 36, right: 36 }}
-        onClick={() => client.query({ query: UPDATE_DATA, variables: { id, set: formData.current } }).then(it => {
-          if (it.error) throw it.error
-          enqueueSnackbar('保存成功!', { variant: 'success' })
-          navigate('/item/' + id)
-        }).catch(e => {
-          console.error(e)
-          enqueueSnackbar('保存失败!', { variant: 'error' })
-        })}
+        onClick={() => Promise.all(pendingList.current.map(fn => fn()))
+          .then(() => client.query({ query: UPDATE_DATA, variables: { id, set: formData.current } }))
+          .then(it => {
+            if (it.error) throw it.error
+            enqueueSnackbar('保存成功!', { variant: 'success' })
+            navigate('/item/' + id)
+          })
+          .catch(e => {
+            console.error(e)
+            enqueueSnackbar('保存失败!', { variant: 'error' })
+          })}
       >
         <SaveIcon />
       </Fab>

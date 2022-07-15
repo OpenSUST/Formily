@@ -26,7 +26,7 @@ import { LIST_USERS, ADD_USER } from '../api'
 import { useQuery, useApolloClient } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 
-const Item: React.FC = () => {
+const Users: React.FC = () => {
   const client = useApolloClient()
   const [open, setOpen] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
@@ -119,4 +119,4 @@ const Item: React.FC = () => {
   )
 }
 
-export default Item
+export default Users

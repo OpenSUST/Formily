@@ -4,10 +4,12 @@ import Button from '@mui/material/Button'
 import Toolbar from '@mui/material/Toolbar'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
+import EnsureDialog from './components/EnsureDialog'
 import Home from './components/Home'
 import Item from './components/Item'
 import Update from './components/Update'
 import Users from './components/Users'
+import Templates from './components/Templates'
 import { SnackbarProvider } from 'notistack'
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
 
@@ -64,12 +66,14 @@ function App () {
       <SnackbarProvider maxSnack={5}>
         <AppBar />
         <Toolbar />
+        <EnsureDialog />
         <ErrorBoundary>
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='item/:id' element={<Item />} />
             <Route path='update/:id' element={<Update />} />
             <Route path='users' element={<Users />} />
+            <Route path='templates' element={<Templates />} />
           </Routes>
         </ErrorBoundary>
       </SnackbarProvider>

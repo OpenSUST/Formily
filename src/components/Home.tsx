@@ -8,14 +8,49 @@ import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import Collapse from '@mui/material/Collapse'
+import Card from '@mui/material/Card'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import Avatar from '@mui/material/Avatar'
+import Divider from '@mui/material/Divider'
 import SearchIcon from '@mui/icons-material/Search'
-import { GET_ALL_COUNT } from '../api'
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import CardContent from '@mui/material/CardContent'
+import { GET_ALL_COUNT, SEARCH } from '../api'
 
-import { useQuery } from '@apollo/client'
+import { useQuery, useApolloClient } from '@apollo/client'
+import { useSnackbar } from 'notistack'
+import { useNavigate } from 'react-router-dom'
+
+interface Item {
+  description: string
+  images: string[]
+  title: string
+  _id: string
+}
 
 const Home: React.FC = () => {
-  const [value, setValue] = useState('')
+  const navigate = useNavigate()
+  const client = useApolloClient()
+  const [keyword, setKeyword] = useState('')
+  const [searchData, setSearchData] = useState<Item[]>()
+  const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery(GET_ALL_COUNT)
+
+  const handleSearch = () => {
+    setSearchData(undefined)
+    client.query({ query: SEARCH, variables: { keyword } }).then(({ error, data }) => {
+      if (error) throw error
+      setSearchData(data.item.search.items)
+    }).catch(e => {
+      console.error(e)
+      enqueueSnackbar('搜索发生错误!', { variant: 'error' })
+    })
+  }
 
   return (
     <>
@@ -37,8 +72,9 @@ const Home: React.FC = () => {
           freeSolo
           disableClearable
           options={[]}
-          onInputChange={(_, val) => setValue(val)}
-          inputValue={value}
+          onInputChange={(_, val) => setKeyword(val)}
+          inputValue={keyword}
+          onSubmit={handleSearch}
           sx={{
             maxWidth: 500,
             width: '100%',
@@ -50,10 +86,10 @@ const Home: React.FC = () => {
               {...params}
               label='搜索...'
               InputProps={{
-                endAdornment: value
+                endAdornment: keyword
                   ? (
                     <InputAdornment position='end'>
-                      <IconButton>
+                      <IconButton onClick={handleSearch}>
                         <SearchIcon />
                       </IconButton>
                     </InputAdornment>
@@ -63,7 +99,40 @@ const Home: React.FC = () => {
             />
           )}
         />
-        <Typography variant='overline' sx={{ mt: 0.5 }}>在上面输入内容以搜索...</Typography>
+        <Collapse in={!!searchData} sx={{ width: '100%', maxWidth: 500 }}>
+          <Card sx={{ mt: 1 }}>
+            {searchData?.length
+              ? (
+                <List>
+                  {searchData.map((it, i) => (
+                    <React.Fragment key={it._id}>
+                      {i ? <Divider /> : undefined}
+                      <ListItem
+                        disablePadding
+                        alignItems='flex-start'
+                        secondaryAction={
+                          <IconButton
+                            edge='end'
+                          >
+                            <FavoriteIcon />
+                          </IconButton>
+                        }
+                      >
+                        <ListItemButton onClick={() => navigate('/item/' + it._id)}>
+                          <ListItemAvatar>
+                            <Avatar alt={it.title} src={it.images?.[0]}>{it.images?.[0] ? undefined : it.title[0]}</Avatar>
+                          </ListItemAvatar>
+                          <ListItemText primary={it.title} secondary={it.description} />
+                        </ListItemButton>
+                      </ListItem>
+                    </React.Fragment>
+                  ))}
+                </List>
+                )
+              : <CardContent>无结果</CardContent>}
+          </Card>
+        </Collapse>
+        {!searchData && <Typography variant='overline' sx={{ mt: 0.5 }}>在上面输入内容以搜索...</Typography>}
       </Box>
       <Box
         sx={{

@@ -66,3 +66,56 @@ export const LOGOUT = gql`
 query {
   user { logout }
 }`
+
+export const UPLOAD = gql`
+query Request ($ext: String!, $size: Int!) {
+  file {
+    requestUpload (ext: $ext, size: $size) {
+      postURL
+      formData
+    }
+  }
+}`
+
+export const SEARCH = gql`
+query Request ($keyword: String!) {
+  item {
+    search (keyword: $keyword) {
+      items
+    }
+  }
+}`
+
+export const LIST_TEMPLATES = gql`
+query {
+  template {
+    search (name: "*") {
+      _id
+      name
+    }
+  }
+}`
+
+export const GET_TEMPLATES = gql`
+query Request ($id: String!) {
+  template {
+    get (id: "") {
+      name
+      payload
+    }
+  }
+}`
+
+export const ADD_TEMPLATE = gql`
+query {
+  template {
+    add (name: "新建模板", payload: "")
+  }
+}`
+
+export const DELETE_TEMPLATE = gql`
+query Request ($id: String!) {
+  template {
+    del (id: $id)
+  }
+}`
