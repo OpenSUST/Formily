@@ -130,6 +130,16 @@ const ResponsiveAppBar = () => {
                   <Typography textAlign='center'>模板管理</Typography>
                 </MenuItem>
               )}
+              {isAdmin && (
+                <MenuItem
+                  onClick={() => {
+                    setAnchorElUser(null)
+                    navigate('/schemas')
+                  }}
+                >
+                  <Typography textAlign='center'>字段管理</Typography>
+                </MenuItem>
+              )}
               <MenuItem
                 onClick={() => {
                   setAnchorElUser(null)

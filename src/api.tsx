@@ -119,3 +119,13 @@ query Request ($id: String!) {
     del (id: $id)
   }
 }`
+
+export const LIST_SCHEMAS = gql`
+query {
+  key {
+    get {
+      username
+      roles
+    }
+  }
+}`

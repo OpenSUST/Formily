@@ -10,6 +10,7 @@ import Item from './components/Item'
 import Update from './components/Update'
 import Users from './components/Users'
 import Templates from './components/Templates'
+import Schemas from './components/Schemas'
 import { SnackbarProvider } from 'notistack'
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
 
@@ -74,6 +75,7 @@ function App () {
             <Route path='update/:id' element={<Update />} />
             <Route path='users' element={<Users />} />
             <Route path='templates' element={<Templates />} />
+            <Route path='schemas' element={<Schemas />} />
           </Routes>
         </ErrorBoundary>
       </SnackbarProvider>
