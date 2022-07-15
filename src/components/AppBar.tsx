@@ -11,16 +11,24 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
+import Divider from '@mui/material/Divider'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
 import AdbIcon from '@mui/icons-material/Adb'
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark'
 import { useSnackbar } from 'notistack'
 import { useNavigate } from 'react-router-dom'
 import { useApolloClient } from '@apollo/client'
+import { FavoriteType } from '../types'
 import { isLogin, username, isAdmin, AUTH, LOGOUT } from '../api'
 
 const ResponsiveAppBar = () => {
@@ -30,6 +38,9 @@ const ResponsiveAppBar = () => {
   const { enqueueSnackbar } = useSnackbar()
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const loginData = useMemo(() => ({ username: '', password: '' }), [open])
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement>()
+  const [favorites, setFavorites] = useState<Record<string, FavoriteType>>({})
+  const [selectedItems, setSelectedItems] = useState<string[]>([])
 
   return (
     <AppBar position='fixed'>
@@ -79,6 +90,10 @@ const ResponsiveAppBar = () => {
                 size='large'
                 color='inherit'
                 sx={{ mr: 1 }}
+                onClick={e => {
+                  setFavorites(JSON.parse(localStorage.getItem('favorites') || '{}'))
+                  setAnchorEl(e.currentTarget)
+                }}
               >
                 <CollectionsBookmarkIcon />
               </IconButton>
@@ -96,7 +111,6 @@ const ResponsiveAppBar = () => {
             </Tooltip>
             <Menu
               sx={{ mt: '45px' }}
-              id='menu-appbar'
               anchorEl={anchorElUser}
               anchorOrigin={{
                 vertical: 'top',
@@ -140,6 +154,17 @@ const ResponsiveAppBar = () => {
                   <Typography textAlign='center'>字段管理</Typography>
                 </MenuItem>
               )}
+              {isAdmin && (
+                <MenuItem
+                  onClick={() => {
+                    setAnchorElUser(null)
+                    const id = '' // TODO: 创建一个空的Item然后获取ID
+                    navigate('/update/' + id)
+                  }}
+                >
+                  <Typography textAlign='center'>添加新项目</Typography>
+                </MenuItem>
+              )}
               <MenuItem
                 onClick={() => {
                   setAnchorElUser(null)
@@ -158,8 +183,58 @@ const ResponsiveAppBar = () => {
           </Box>
         </Toolbar>
       </Container>
+      <Menu
+        anchorEl={anchorEl}
+        open={!!anchorEl}
+        onClose={() => setAnchorEl(undefined)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+      >
+        <List sx={{ minWidth: 240 }}>
+          {Object.entries(favorites).map(([id, it], i) => (
+            <React.Fragment key={id}>
+              {i ? <Divider /> : undefined}
+              <ListItem
+                disablePadding
+                alignItems='flex-start'
+                secondaryAction={
+                  <Checkbox
+                    edge='start'
+                    checked={selectedItems[0] === id || selectedItems[1] === id}
+                    tabIndex={-1}
+                    onChange={e => setSelectedItems(e.target.checked
+                      ? [selectedItems[1], id]
+                      : selectedItems[0] === id ? [selectedItems[1]] : [selectedItems[0]])}
+                  />
+                }
+              >
+                <ListItemButton onClick={() => navigate('/item/' + id)}>
+                  <ListItemAvatar>
+                    <Avatar alt={it.title} src={it.image}>{it.image ? undefined : it.title[0]}</Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={it.title} secondary={it.description} />
+                </ListItemButton>
+              </ListItem>
+            </React.Fragment>
+          ))}
+        </List>
+        <Box sx={{ textAlign: 'right' }}>
+          <Button
+            disabled={!(selectedItems[0] && selectedItems[1])}
+            onClick={() => navigate(`/compare/${selectedItems[0]}/${selectedItems[1]}`)}
+          >
+            对比
+          </Button>
+        </Box>
+      </Menu>
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>添加用户</DialogTitle>
+        <DialogTitle>登录</DialogTitle>
         <DialogContent>
           <DialogContentText>请在下面输入新管理员用户的名字和密码</DialogContentText>
           <TextField

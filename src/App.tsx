@@ -11,6 +11,7 @@ import Update from './components/Update'
 import Users from './components/Users'
 import Templates from './components/Templates'
 import Schemas from './components/Schemas'
+import Compare from './components/Compare'
 import { SnackbarProvider } from 'notistack'
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
 
@@ -73,6 +74,7 @@ function App () {
             <Route path='/' element={<Home />} />
             <Route path='item/:id' element={<Item />} />
             <Route path='update/:id' element={<Update />} />
+            <Route path='compare/:left/:right' element={<Compare />} />
             <Route path='users' element={<Users />} />
             <Route path='templates' element={<Templates />} />
             <Route path='schemas' element={<Schemas />} />

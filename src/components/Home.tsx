@@ -18,26 +18,21 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Divider from '@mui/material/Divider'
 import SearchIcon from '@mui/icons-material/Search'
-import FavoriteIcon from '@mui/icons-material/Favorite'
+import FavoriteIcon from '@mui/icons-material/Star'
 import CardContent from '@mui/material/CardContent'
 import { GET_ALL_COUNT, SEARCH } from '../api'
 
 import { useQuery, useApolloClient } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { useNavigate } from 'react-router-dom'
-
-interface Item {
-  description: string
-  images: string[]
-  title: string
-  _id: string
-}
+import { ItemType, FavoriteType } from '../types'
 
 const Home: React.FC = () => {
   const navigate = useNavigate()
   const client = useApolloClient()
   const [keyword, setKeyword] = useState('')
-  const [searchData, setSearchData] = useState<Item[]>()
+  const [searchData, setSearchData] = useState<ItemType[]>()
+  const [favorites, setFavorites] = useState<Record<string, FavoriteType>>(() => JSON.parse(localStorage.getItem('favorites') || '{}'))
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery(GET_ALL_COUNT)
 
@@ -58,12 +53,12 @@ const Home: React.FC = () => {
         sx={{
           background: 'url(https://api.oneneko.com/v1/bing_today) no-repeat center',
           backgroundSize: 'cover',
-          height: '70vh',
+          minHeight: '70vh',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          padding: '0 20px',
+          padding: '100px 20px',
           backgroundAttachment: 'fixed'
         }}
       >
@@ -113,6 +108,14 @@ const Home: React.FC = () => {
                         secondaryAction={
                           <IconButton
                             edge='end'
+                            color={it._id in favorites ? 'warning' : undefined}
+                            onClick={() => {
+                              const obj = { ...favorites }
+                              if (it._id in obj) delete (obj as any)[it._id]
+                              else obj[it._id] = { title: it.title, image: it.images?.[0], description: it.description }
+                              localStorage.setItem('favorites', JSON.stringify(obj))
+                              setFavorites(obj)
+                            }}
                           >
                             <FavoriteIcon />
                           </IconButton>
