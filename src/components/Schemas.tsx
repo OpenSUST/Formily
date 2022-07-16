@@ -25,6 +25,7 @@ import Select from '@mui/material/Select'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import { skipFieldsList } from '../api'
 import { typeNameMap } from './fields'
 import { CircularLoading } from './Loading'
 
@@ -65,7 +66,7 @@ const Schemas: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.filter((it: any) => it._id !== '_id').map((row: any) => (
+            {rows.filter((it: any) => !skipFieldsList[it._id]).map((row: any) => (
               <TableRow
                 key={row._id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

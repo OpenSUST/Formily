@@ -47,7 +47,7 @@ const Compare: React.FC = () => {
     const ViewComponent = ((fields as any)[schemas[0].dict[key]?.meta?.kind] || fields.text).ViewComponent
       ; (key in othersRight ? arr : leftHas).push(
         <TableRow key={key} sx={styles}>
-          <TableCell component='th' scope='row'>{keys.find(i => i._id === key)?.localization?.['zh-CN'] || key}</TableCell>
+          <TableCell component='th' scope='row'>{keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || key}</TableCell>
           <TableCell><ViewComponent value={othersLeft[key]} /></TableCell>
           <TableCell>{key in othersRight && <ViewComponent value={othersRight[key]} />}</TableCell>
         </TableRow>
@@ -58,7 +58,7 @@ const Compare: React.FC = () => {
     const ViewComponent = ((fields as any)[schemas[1].dict[key]?.meta?.kind] || fields.text).ViewComponent
     rightHas.push((
       <TableRow key={key} sx={styles}>
-        <TableCell component='th' scope='row'>{keys.find(i => i._id === key)?.localization?.['zh-CN'] || key}</TableCell>
+        <TableCell component='th' scope='row'>{keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || key}</TableCell>
         <TableCell />
         <TableCell><ViewComponent value={othersRight[key]} /></TableCell>
       </TableRow>

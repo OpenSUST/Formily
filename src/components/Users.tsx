@@ -20,6 +20,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Container from '@mui/material/Container'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
+import { openDialog } from './EnsureDialog'
 import { CircularLoading } from './Loading'
 import { LIST_USERS, ADD_USER } from '../api'
 
@@ -46,7 +47,19 @@ const Users: React.FC = () => {
             <ListItem
               key={it.username}
               secondaryAction={
-                <IconButton edge='end'>
+                <IconButton
+                  edge='end'
+                  onClick={() => openDialog('确认要删除该用户?') // TODO: 删除用户
+                    .then(res => res && client.query({ variables: { id: '' } })
+                      .then(({ error }) => {
+                        if (error) throw error
+                        enqueueSnackbar('删除成功!', { variant: 'success' })
+                      }) as any)
+                    .catch(e => {
+                      console.error(e)
+                      enqueueSnackbar('删除失败!', { variant: 'error' })
+                    })}
+                >
                   <DeleteIcon />
                 </IconButton>
               }

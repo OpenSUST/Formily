@@ -25,7 +25,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import fields from './fields'
 import Field from './fields/Field'
 import { CircularLoading } from './Loading'
-import { GET_DATA, ADD_DATA, UPDATE_DATA } from '../api'
+import { GET_DATA, ADD_DATA, UPDATE_DATA, skipFieldsList } from '../api'
 
 import { useQuery, useApolloClient, gql } from '@apollo/client'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -59,7 +59,7 @@ const ItemCard: React.FC = () => {
   const [importTempateOpen, setImportTempateOpen] = useState(false)
   const [options, setOptions] = useState<readonly FieldType[]>([])
   const [templates, setTemplates] = useState<readonly TemplateType[]>([])
-  const [fieldsData, setFieldsData] = useState<any[]>()
+  const [fieldsData, setFieldsData] = useState<any[]>([])
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(null)
   let others = {}
   let schema: Schema
@@ -116,7 +116,8 @@ const ItemCard: React.FC = () => {
         <Button
           onClick={async () => {
             const res = await client.query({ query: gql`query { key { get { _id localization schema } } }` })
-            setOptions(res.data.key.get.map((i: any) => ({ _id: i._id, name: i.localization?.['zh-CN'] || i._id })))
+            setOptions(res.data.key.get.filter((it: any) => !skipFieldsList[it._id])
+              .map((i: any) => ({ _id: i._id, name: i.localization?.['zh-CN'] || i._id })))
             setAddFieldOpen(true)
           }}
         >

@@ -5,6 +5,13 @@ export const username = localStorage.getItem('username') || ''
 export const isAdmin = localStorage.getItem('isAdmin') === 'true'
 export const isLogin = !!token
 
+export const skipFieldsList: Record<string, true | undefined> = {
+  _id: true,
+  description: true,
+  images: true,
+  title: true
+}
+
 export const GET_DATA = gql`
 query Request ($id: String!) {
   item {
