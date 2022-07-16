@@ -137,3 +137,17 @@ query {
     }
   }
 }`
+
+export const GET_TWO_ITEMS = gql`
+query ($left: String!, $right: String!) {
+  item {
+    itemLeft: get (id: $left) {
+      items
+      schema
+    }
+    itemRight: get (id: $right) {
+      items
+      schema
+    }
+  }
+}`

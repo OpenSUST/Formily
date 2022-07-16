@@ -18,7 +18,7 @@ const ItemCard: React.FC<{ image: string, title: string, description: string, id
   const [isFavorite, setFavorite] = useState(() => id in JSON.parse(localStorage.getItem('favorites') || '{}'))
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
   return (
-    <Card>
+    <Card sx={{ mb: 2 }}>
       <CardHeader
         action={
           <IconButton onClick={e => setAnchorEl(e.currentTarget)}>

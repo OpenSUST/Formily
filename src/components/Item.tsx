@@ -42,10 +42,10 @@ const Item: React.FC = () => {
           <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>{title}</Typography>
           <Table sx={{ tableLayout: 'fixed' }}>
             <TableBody>
-              {Object.entries(others).map(([key, value], i) => {
+              {Object.entries(others).map(([key, value]) => {
                 const ViewComponent = ((fields as any)[schema.dict[key]?.meta?.kind] || fields.text).ViewComponent
                 return (
-                  <TableRow key={i} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 100 }, '& td': { pl: 0, textAlign: 'justify' }, '& th, & td': { verticalAlign: 'top' } }}>
+                  <TableRow key={key} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 100 }, '& td': { pl: 0, textAlign: 'justify' }, '& th, & td': { verticalAlign: 'top' } }}>
                     <TableCell component='th' scope='row'>{key}</TableCell>
                     <TableCell><ViewComponent value={value} /></TableCell>
                   </TableRow>
