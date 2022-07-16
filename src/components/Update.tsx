@@ -79,7 +79,7 @@ const ItemCard: React.FC = () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ;[{ _id, ...others }] = items
   } else {
-    const { loading, error, data } = useQuery(gql`query { key { get { _id localization schema } } }`)
+    const { loading, error, data } = useQuery(gql`query { key { get(ids: ["title", "images", "description"]) { _id localization schema } } }`)
     if (error) throw error
     if (loading) return <CircularLoading loading />
     const rows = data.key.get
