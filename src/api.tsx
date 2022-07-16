@@ -16,8 +16,16 @@ query Request ($id: String!) {
 }
 `
 
+export const ADD_DATA = gql`
+mutation ($set: JSON!) {
+  item {
+    add(payload: $set)
+  }
+}
+`
+
 export const UPDATE_DATA = gql`
-query Request ($id: String!, $set: JSON!) {
+mutation ($id: String!, $set: JSON!) {
   item {
     update (id: $id, set: $set)
   }

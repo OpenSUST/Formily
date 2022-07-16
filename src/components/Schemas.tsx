@@ -27,12 +27,16 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import { typeNameMap } from './fields'
 import { CircularLoading } from './Loading'
-import { LIST_USERS, ADD_USER } from '../api'
 
-import { useQuery, useApolloClient } from '@apollo/client'
+import { useQuery, useApolloClient, gql } from '@apollo/client'
+import Schema from 'schemastery'
 import { useSnackbar } from 'notistack'
 
-const rows = [{ id: 'aaa', name: '字段A', type: 'text' }]
+const getTypeName = (type: string) => {
+  const schema = new Schema(JSON.parse(type))
+  if (schema.type === 'number') return typeNameMap.number
+  return typeNameMap[schema.meta!.kind!] as string // TODO
+}
 
 const Schemas: React.FC = () => {
   const client = useApolloClient()
@@ -40,12 +44,13 @@ const Schemas: React.FC = () => {
   const [editId, setEditId] = useState('')
   const [newName, setNewName] = useState('')
   const { enqueueSnackbar } = useSnackbar()
-  const { loading, error, data } = useQuery(LIST_USERS)
 
-  const addKeyData = useMemo(() => ({ name: '', type: '' }), [open])
+  const addKeyData = useMemo(() => ({ key: '', type: '' }), [open])
+  const { loading, error, data } = useQuery(gql`query { key { get { _id localization schema } } }`)
 
   if (error) throw error
   if (loading) return <CircularLoading loading />
+  const rows = data.key.get
 
   return (
     <Container sx={{ mt: 4 }}>
@@ -60,29 +65,44 @@ const Schemas: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => ( // TODO:
-              <TableRow
-                key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component='th' scope='row'>{row.name}</TableCell>
-                <TableCell align='right'>{(typeNameMap as any)[row.type] || '文本'}</TableCell>
-                <TableCell align='right'>
-                  <IconButton edge='end' size='small' onClick={() => setEditId(row.id)}>
-                    <EditIcon fontSize='small' />
-                  </IconButton>
-                  <IconButton
-                    edge='end'
-                    size='small'
-                    onClick={() => {
-                      // TODO: 删除字段
-                    }}
-                  >
-                    <DeleteIcon fontSize='small' />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+            {rows.map((row) => {
+              return (
+                <TableRow
+                  key={row._id}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component='th' scope='row'>{row.localization?.['zh-CN'] || row._id}</TableCell>
+                  <TableCell align='right'>{getTypeName(row.schema) || '文本'}</TableCell>
+                  <TableCell align='right'>
+                    <IconButton edge='end' size='small' onClick={() => setEditId(row._id)}>
+                      <EditIcon fontSize='small' />
+                    </IconButton>
+                    <IconButton
+                      edge='end'
+                      size='small'
+                      onClick={() => {
+                        client.mutate({
+                          mutation: gql`
+                          mutation ($key: String!) {
+                            key { del(key: $key) }
+                          }
+                        `,
+                          variables: { key: editId }
+                        }).then(it => {
+                          if (it.errors) throw it.errors
+                          enqueueSnackbar('添加字段成功!', { variant: 'success' })
+                        }).catch(e => {
+                          console.error(e)
+                          enqueueSnackbar('添加字段失败!', { variant: 'error' })
+                        })
+                      }}
+                    >
+                      <DeleteIcon fontSize='small' />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </TableContainer>
@@ -96,7 +116,7 @@ const Schemas: React.FC = () => {
             margin='dense'
             variant='standard'
             label='字段名'
-            onChange={e => (addKeyData.name = e.target.value)}
+            onChange={e => (addKeyData.key = e.target.value)}
           />
           <FormControl fullWidth variant='standard' margin='dense'>
             <InputLabel id='schema-key-type'>字段类型</InputLabel>
@@ -118,8 +138,20 @@ const Schemas: React.FC = () => {
           <Button
             onClick={() => {
               setOpen(false)
-              client.query({ query: ADD_USER, variables: addKeyData }).then(it => { // TODO:
-                if (it.error) throw it.error
+              const schema = addKeyData.type === 'number' ? Schema.number() : Schema.string()
+              schema.meta ||= {}
+              if (addKeyData.type !== 'number') schema.meta.kind = addKeyData.type as any
+              client.mutate({
+                mutation: gql`
+                  mutation ($key: String!, $schema: String!) {
+                    key {
+                      add(key: $key, schema: $schema)
+                    }
+                  }
+                `,
+                variables: { key: addKeyData.key, schema: JSON.stringify(schema.toJSON()) }
+              }).then(it => {
+                if (it.errors) throw it.errors
                 enqueueSnackbar('添加字段成功!', { variant: 'success' })
               }).catch(e => {
                 console.error(e)
@@ -160,9 +192,19 @@ const Schemas: React.FC = () => {
               setOpen(false)
               setNewName('')
               setEditId('')
-              client.query({ query: ADD_USER, variables: addKeyData }).then(it => { // TODO:
-                if (it.error) throw it.error
+              client.mutate({
+                mutation: gql`
+                  mutation ($key: String!, $name: String!) {
+                    key {
+                      setLocalization(key: $key, lang: "zh-CN", value: $name)
+                    }
+                  }
+                `,
+                variables: { key: editId, name: newName }
+              }).then(it => {
+                if (it.errors) throw it.errors[0]
                 enqueueSnackbar('修改字段成功!', { variant: 'success' })
+                setTimeout(() => window.location.reload(), 1000) // TODO
               }).catch(e => {
                 console.error(e)
                 enqueueSnackbar('修改字段失败!', { variant: 'error' })

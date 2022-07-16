@@ -73,6 +73,7 @@ function App () {
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='item/:id' element={<Item />} />
+            <Route path='create' element={<Update />} />
             <Route path='update/:id' element={<Update />} />
             <Route path='compare/:left/:right' element={<Compare />} />
             <Route path='users' element={<Users />} />
