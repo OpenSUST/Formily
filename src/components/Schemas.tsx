@@ -35,7 +35,7 @@ import { useSnackbar } from 'notistack'
 const getTypeName = (type: string) => {
   const schema = new Schema(JSON.parse(type))
   if (schema.type === 'number') return typeNameMap.number
-  return typeNameMap[schema.meta!.kind!] as string // TODO
+  return (typeNameMap as any)[schema.meta!.kind!] as string
 }
 
 const Schemas: React.FC = () => {
@@ -65,7 +65,7 @@ const Schemas: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {rows.filter((it: any) => it._id !== '_id').map((row: any) => (
               <TableRow
                 key={row._id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -99,7 +99,7 @@ const Schemas: React.FC = () => {
                     <DeleteIcon fontSize='small' />
                   </IconButton>
                 </TableCell>
-              </TableRow>
+              </TableRow>)
             )}
           </TableBody>
         </Table>

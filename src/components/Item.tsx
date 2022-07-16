@@ -35,7 +35,7 @@ const Item: React.FC = () => {
     <Container sx={{ mt: 4 }} maxWidth='xl'>
       <Grid container spacing={4} sx={{ flexDirection: { md: 'row-reverse' } }}>
         <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, padding: '0!important' }} />
-        <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, position: { md: 'fixed' } }}>
+        <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, position: { md: 'fixed' }, width: '100%' }}>
           <ItemCard title={title} description={description} image={others.images[0]} id={id!} />
         </Grid>
         <Grid item sx={{ flex: '1', width: 0 }}>
