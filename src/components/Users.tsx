@@ -24,7 +24,7 @@ import { openDialog } from './EnsureDialog'
 import { CircularLoading } from './Loading'
 import { LIST_USERS, ADD_USER } from '../api'
 
-import { useQuery, useApolloClient } from '@apollo/client'
+import { useQuery, useApolloClient, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 
 const Users: React.FC = () => {
@@ -49,16 +49,20 @@ const Users: React.FC = () => {
               secondaryAction={
                 <IconButton
                   edge='end'
-                  onClick={() => openDialog('确认要删除该用户?') // TODO: 删除用户
-                    .then(res => res && client.query({ variables: { id: '' } })
-                      .then(({ error }) => {
-                        if (error) throw error
-                        enqueueSnackbar('删除成功!', { variant: 'success' })
-                      }) as any)
-                    .catch(e => {
+                  onClick={async () => {
+                    const res = await openDialog('确认要删除该用户?')
+                    if (!res) return
+                    client.mutate({
+                      mutation: gql`mutation ($username: String!) { user { del(username: $username) } }`,
+                      variables: { username: it.username }
+                    }).then(({ errors }) => {
+                      if (errors?.length) throw errors[0]
+                      enqueueSnackbar('删除成功!', { variant: 'success' })
+                    }).catch(e => {
                       console.error(e)
                       enqueueSnackbar('删除失败!', { variant: 'error' })
-                    })}
+                    })
+                  }}
                 >
                   <DeleteIcon />
                 </IconButton>
