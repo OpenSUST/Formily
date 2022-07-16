@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { openDialog } from './EnsureDialog'
 import { FavoriteType } from '../types'
 import { isAdmin } from '../api'
 import { useNavigate } from 'react-router-dom'
@@ -64,6 +65,16 @@ const ItemCard: React.FC<{ image: string, title: string, description: string, id
         >
           {isFavorite ? '取消收藏' : '收藏'}
         </MenuItem>
+        {isAdmin && (
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(undefined)
+              openDialog('确定要删除项目?').then(res => res && console.log('删除项目')) // TODO: 删除Item
+            }}
+          >
+            <Typography color='error'>删除</Typography>
+          </MenuItem>
+        )}
       </Menu>
     </Card>
   )

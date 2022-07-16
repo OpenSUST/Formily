@@ -9,6 +9,7 @@ import Home from './components/Home'
 import Item from './components/Item'
 import Update from './components/Update'
 import Users from './components/Users'
+import Template from './components/Template'
 import Templates from './components/Templates'
 import Schemas from './components/Schemas'
 import Compare from './components/Compare'
@@ -76,8 +77,9 @@ function App () {
             <Route path='create' element={<Update />} />
             <Route path='update/:id' element={<Update />} />
             <Route path='compare/:left/:right' element={<Compare />} />
-            <Route path='users' element={<Users />} />
+            <Route path='template/:id' element={<Template />} />
             <Route path='templates' element={<Templates />} />
+            <Route path='users' element={<Users />} />
             <Route path='schemas' element={<Schemas />} />
           </Routes>
         </ErrorBoundary>

@@ -97,7 +97,7 @@ query Request ($keyword: String!) {
 export const LIST_TEMPLATES = gql`
 query {
   template {
-    search (name: "*") {
+    search (name: "") {
       _id
       name
     }
