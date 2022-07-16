@@ -150,4 +150,5 @@ query ($left: String!, $right: String!) {
       schema
     }
   }
+  key { get { _id localization } }
 }`

@@ -28,6 +28,7 @@ const Compare: React.FC = () => {
 
   if (error) throw error
   if (loading || !schemas) return <CircularLoading loading />
+  const keys = data.key.get
 
   const { items: itemsLeft } = data.item.itemLeft
   const { items: itemsRight } = data.item.itemRight
@@ -44,20 +45,20 @@ const Compare: React.FC = () => {
 
   for (const key in othersLeft) {
     const ViewComponent = ((fields as any)[schemas[0].dict[key]?.meta?.kind] || fields.text).ViewComponent
-    ;(key in othersRight ? arr : leftHas).push((
-      <TableRow key={key} sx={styles}>
-        <TableCell component='th' scope='row'>{key}</TableCell>
-        <TableCell><ViewComponent value={othersLeft[key]} /></TableCell>
-        <TableCell>{key in othersRight && <ViewComponent value={othersRight[key]} />}</TableCell>
-      </TableRow>
-    ))
+      ; (key in othersRight ? arr : leftHas).push(
+        <TableRow key={key} sx={styles}>
+          <TableCell component='th' scope='row'>{keys.find(i => i._id === key)?.localization?.['zh-CN'] || key}</TableCell>
+          <TableCell><ViewComponent value={othersLeft[key]} /></TableCell>
+          <TableCell>{key in othersRight && <ViewComponent value={othersRight[key]} />}</TableCell>
+        </TableRow>
+    )
   }
   for (const key in othersRight) {
     if (key in othersLeft) continue
     const ViewComponent = ((fields as any)[schemas[1].dict[key]?.meta?.kind] || fields.text).ViewComponent
     rightHas.push((
       <TableRow key={key} sx={styles}>
-        <TableCell component='th' scope='row'>{key}</TableCell>
+        <TableCell component='th' scope='row'>{keys.find(i => i._id === key)?.localization?.['zh-CN'] || key}</TableCell>
         <TableCell />
         <TableCell><ViewComponent value={othersRight[key]} /></TableCell>
       </TableRow>

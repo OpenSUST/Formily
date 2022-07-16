@@ -13,11 +13,15 @@ import { openDialog } from './EnsureDialog'
 import { FavoriteType } from '../types'
 import { isAdmin } from '../api'
 import { useNavigate } from 'react-router-dom'
+import { gql, useApolloClient } from '@apollo/client'
+import { useSnackbar } from 'notistack'
 
 const ItemCard: React.FC<{ image: string, title: string, description: string, id: string }> = ({ image, title, description, id }) => {
   const navigate = useNavigate()
   const [isFavorite, setFavorite] = useState(() => id in JSON.parse(localStorage.getItem('favorites') || '{}'))
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
+  const client = useApolloClient()
+  const { enqueueSnackbar } = useSnackbar()
   return (
     <Card sx={{ mb: 2 }}>
       <CardHeader
@@ -67,9 +71,19 @@ const ItemCard: React.FC<{ image: string, title: string, description: string, id
         </MenuItem>
         {isAdmin && (
           <MenuItem
-            onClick={() => {
+            onClick={async () => {
               setAnchorEl(undefined)
-              openDialog('确定要删除项目?').then(res => res && console.log('删除项目')) // TODO: 删除Item
+              const confirm = await openDialog('确定要删除项目?')
+              if (!confirm) return
+              client.mutate({
+                mutation: gql`mutation ($id: String!){ item{ del(id: $id) } }`,
+                variables: { id }
+              }).then(res => {
+                if (res.errors) throw res.errors[0]
+                enqueueSnackbar('删除成功', { variant: 'success' })
+              }).catch(e => {
+                enqueueSnackbar(e.message, { variant: 'error' })
+              })
             }}
           >
             <Typography color='error'>删除</Typography>
