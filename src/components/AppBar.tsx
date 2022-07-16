@@ -158,8 +158,7 @@ const ResponsiveAppBar = () => {
                 <MenuItem
                   onClick={() => {
                     setAnchorElUser(null)
-                    const id = '' // TODO: 创建一个空的Item然后获取ID
-                    navigate('/update/' + id)
+                    navigate('/create')
                   }}
                 >
                   <Typography textAlign='center'>添加新项目</Typography>
@@ -236,7 +235,7 @@ const ResponsiveAppBar = () => {
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>登录</DialogTitle>
         <DialogContent>
-          <DialogContentText>请在下面输入新管理员用户的名字和密码</DialogContentText>
+          <DialogContentText>请在下面输入管理员用户的名字和密码</DialogContentText>
           <TextField
             autoFocus
             fullWidth
