@@ -115,9 +115,9 @@ query Request ($id: String!) {
 }`
 
 export const ADD_TEMPLATE = gql`
-query {
+mutation {
   template {
-    add (name: "新建模板", payload: "")
+    add (name: "新建模板", payload: {})
   }
 }`
 

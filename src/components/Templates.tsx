@@ -66,7 +66,7 @@ const Templates: React.FC = () => {
         color='primary'
         aria-label='add'
         sx={{ position: 'fixed', bottom: 36, right: 36 }}
-        onClick={() => client.query({ query: ADD_TEMPLATE }).then(({ error }) => { if (error) throw error }).catch(console.error)}
+        onClick={() => client.mutate({ mutation: ADD_TEMPLATE }).then(({ errors }) => { if (errors) throw errors }).catch(console.error)}
       >
         <AddIcon />
       </Fab>
