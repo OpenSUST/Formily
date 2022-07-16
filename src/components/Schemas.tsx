@@ -65,44 +65,42 @@ const Schemas: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => {
-              return (
-                <TableRow
-                  key={row._id}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell component='th' scope='row'>{row.localization?.['zh-CN'] || row._id}</TableCell>
-                  <TableCell align='right'>{getTypeName(row.schema) || '文本'}</TableCell>
-                  <TableCell align='right'>
-                    <IconButton edge='end' size='small' onClick={() => setEditId(row._id)}>
-                      <EditIcon fontSize='small' />
-                    </IconButton>
-                    <IconButton
-                      edge='end'
-                      size='small'
-                      onClick={() => {
-                        client.mutate({
-                          mutation: gql`
+            {rows.map((row) => (
+              <TableRow
+                key={row._id}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component='th' scope='row'>{row.localization?.['zh-CN'] || row._id}</TableCell>
+                <TableCell align='right'>{getTypeName(row.schema) || '文本'}</TableCell>
+                <TableCell align='right'>
+                  <IconButton edge='end' size='small' onClick={() => setEditId(row._id)}>
+                    <EditIcon fontSize='small' />
+                  </IconButton>
+                  <IconButton
+                    edge='end'
+                    size='small'
+                    onClick={() => {
+                      client.mutate({
+                        mutation: gql`
                           mutation ($key: String!) {
                             key { del(key: $key) }
                           }
                         `,
-                          variables: { key: editId }
-                        }).then(it => {
-                          if (it.errors) throw it.errors
-                          enqueueSnackbar('添加字段成功!', { variant: 'success' })
-                        }).catch(e => {
-                          console.error(e)
-                          enqueueSnackbar('添加字段失败!', { variant: 'error' })
-                        })
-                      }}
-                    >
-                      <DeleteIcon fontSize='small' />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              )
-            })}
+                        variables: { key: editId }
+                      }).then(it => {
+                        if (it.errors) throw it.errors
+                        enqueueSnackbar('添加字段成功!', { variant: 'success' })
+                      }).catch(e => {
+                        console.error(e)
+                        enqueueSnackbar('添加字段失败!', { variant: 'error' })
+                      })
+                    }}
+                  >
+                    <DeleteIcon fontSize='small' />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
