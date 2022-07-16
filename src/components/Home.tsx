@@ -69,12 +69,17 @@ const Home: React.FC = () => {
           options={[]}
           onInputChange={(_, val) => setKeyword(val)}
           inputValue={keyword}
-          onSubmit={handleSearch}
           sx={{
             maxWidth: 500,
             width: '100%',
             '& .MuiInputLabel-root': { borderRadius: '4px' },
             '& .MuiInputBase-root, & .MuiInputLabel-root': { backgroundColor: theme => theme.palette.background.default }
+          }}
+          onKeyDown={(event: any) => {
+            if (event.key === 'Enter') {
+              event.defaultMuiPrevented = true
+              handleSearch()
+            }
           }}
           renderInput={params => (
             <TextField

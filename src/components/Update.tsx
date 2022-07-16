@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Schema from 'schemastery'
 
 import Typography from '@mui/material/Typography'
@@ -62,6 +62,7 @@ const ItemCard: React.FC = () => {
   const [fieldsData, setFieldsData] = useState<any[]>([])
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(null)
   let others = {}
+  let data2
   let schema: Schema
 
   const formData = useRef<Record<string, any>>({})
@@ -70,16 +71,18 @@ const ItemCard: React.FC = () => {
 
   if (id) {
     const { loading, error, data } = useQuery(GET_DATA, { variables: { id } })
+    data2 = data
     schema = useMemo(() => data && data.item.get.schema && new Schema(data.item.get.schema), [data && data.item.get.schema])
     if (error) throw error
     if (loading || !schema) return <CircularLoading loading />
     const { items } = data.item.get
     if (!items.length) throw new Error('Empty')
     let _id
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ;[{ _id, ...others }] = items
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ;[{ _id, ...others }] = items
   } else {
     const { loading, error, data } = useQuery(gql`query { key { get(ids: ["title", "images", "description"]) { _id localization schema } } }`)
+    data2 = data
     if (error) throw error
     if (loading) return <CircularLoading loading />
     const rows = data.key.get
@@ -87,6 +90,15 @@ const ItemCard: React.FC = () => {
     others = Object.fromEntries(rows.filter((i: any) => i._id !== '_id')
       .map((row: any) => [row._id, (defaultValue as any)[(schema as any).dict[row._id]?.meta?.kind as any] || '']))
   }
+
+  useEffect(() => {
+    if (!others) return
+    const arr: FieldType[] = []
+    for (const key in others) {
+      if (!(key in skipFieldsList)) arr.push({ _id: key, name: '文本' }) // TODO: Field中文名字
+    }
+    setFieldsData(arr)
+  }, [data2])
 
   return (
     <Container sx={{ mt: 4 }} maxWidth='xl'>
@@ -160,6 +172,7 @@ const ItemCard: React.FC = () => {
           <DialogContentText>请选择需要添加的字段</DialogContentText>
           <Autocomplete
             multiple
+            isOptionEqualToValue={(a: any, b: any) => a._id === b._id}
             getOptionLabel={(option: FieldType) => option.name}
             options={options}
             loading={!options.length}
