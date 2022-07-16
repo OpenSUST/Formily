@@ -44,6 +44,7 @@ interface FieldType {
 interface TemplateType {
   _id: string
   name: string
+  payload: string
 }
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
@@ -75,8 +76,8 @@ const ItemCard: React.FC = () => {
     const { items } = data.item.get
     if (!items.length) throw new Error('Empty')
     let _id
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ;[{ _id, ...others }] = items
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ;[{ _id, ...others }] = items
   } else {
     const { loading, error, data } = useQuery(gql`query { key { get { _id localization schema } } }`)
     if (error) throw error
@@ -113,16 +114,18 @@ const ItemCard: React.FC = () => {
       </Table>
       <Box sx={{ p: 1, textAlign: 'right' }}>
         <Button
-          onClick={() => {
-            // TODO: 请求全部Fields, 然后setOptions()
+          onClick={async () => {
+            const res = await client.query({ query: gql`query { key { get { _id localization schema } } }` })
+            setOptions(res.data.key.get.map((i: any) => ({ _id: i._id, name: i.localization?.['zh-CN'] || i._id })))
             setAddFieldOpen(true)
           }}
         >
           添加新字段
         </Button>
         <Button
-          onClick={() => {
-            // TODO: 请求全部模板, 然后setTemplates()
+          onClick={async () => {
+            const res = await client.query({ query: gql`query { template { search { _id name payload } } }` })
+            setTemplates(res.data.template.search)
             setImportTempateOpen(true)
           }}
         >
@@ -240,6 +243,7 @@ const ItemCard: React.FC = () => {
             onClick={() => {
               setImportTempateOpen(false)
               // TODO: 导入模板
+              // Do something with selectedTemplate.payload
             }}
           >
             确定
