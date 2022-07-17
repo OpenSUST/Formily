@@ -28,7 +28,7 @@ import { openDialog } from './EnsureDialog'
 import { CircularLoading } from './Loading'
 import { GET_DATA } from '../api'
 
-import { useQuery, useApolloClient } from '@apollo/client'
+import { useQuery, useApolloClient, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { useParams } from 'react-router-dom'
 
@@ -137,6 +137,34 @@ const Template: React.FC = () => {
             确定
           </Button>
         </DialogActions>
+        <Button
+          onClick={() => {
+            client.mutate(
+              id
+                ? {
+                    mutation: gql`
+                    mutation(id: String!, $name: String!, $payload: JSON!) {
+                      template { update(id: $id, name: $name, payload: $payload) }
+                    }
+                  `,
+                    variables: { id, name: '模板名', payload: fieldsData }
+                  }
+                : {
+                    mutation: gql`
+                    mutation($name: String!, $payload: JSON!) {
+                      template { add(name: $name, payload: $payload) }
+                    }
+                  `,
+                    variables: { name: '模板名', payload: fieldsData }
+                  }).then((it) => {
+              if (it.errors) throw it.errors[0]
+              enqueueSnackbar('添加成功', { variant: 'success' })
+            }).catch(err => {
+              enqueueSnackbar(err.message, { variant: 'error' })
+            })
+          }}
+        >提交
+        </Button>
       </Dialog>
       <Fab
         color='primary'
