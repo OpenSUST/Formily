@@ -13,9 +13,10 @@ export interface FavoriteType {
   description: string
 }
 
-type Kind = 'file' | 'image' | 'csv' | 'office' | 'number';
+export type Kind = 'file' | 'image' | 'csv' | 'liveOffice' | 'number' | 'text' | ''
+
 declare module 'schemastery' {
-    interface Meta {
-        kind?: Kind;
-    }
+  interface Meta {
+      kind?: Kind;
+  }
 }

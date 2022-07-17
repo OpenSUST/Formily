@@ -40,20 +40,21 @@ const components: Field<string[]> = {
     const ref = useRef<FileInfo[]>([])
     const [id, update] = useState(0)
     const client = useApolloClient()
-    useEffect(() => onSubmit(() => Promise.all(
+    console.log(data[keyName])
+    useEffect(() => onSubmit(keyName, () => Promise.all(
       ref.current.map(async it => {
         const { data: { file: { requestUpload: { postURL, formData } } } } =
           await client.query({ query: UPLOAD, variables: { ext: it.extension, size: it.size } })
         const body = new FormData()
         for (const k in formData) body.append(k, formData[k])
         body.append('file', dataURItoBlob(it.path))
-        await fetch(postURL, {
-          body,
-          method: 'POST'
-        })
+        await fetch(postURL, { body, method: 'POST' })
         return postURL + formData.key
       })
-    ).then(urls => { data[keyName] = (data[keyName] || value).concat(urls); console.log(data) }) as any), [])
+    ).then(urls => {
+      if (!data[keyName] && !urls.length) return
+      data[keyName] = (data[keyName] || value).concat(urls)
+    }) as any), [])
     return (
       <Box sx={{ whiteSpace: 'nowrap', overflowX: 'auto' }}>
         {(data[keyName] as string[] || value).map((url, i, cur) => (
@@ -96,9 +97,8 @@ const components: Field<string[]> = {
           maxFileSize={10}
           allowedExtensions={['jpg', 'jpeg', 'png']}
           onFilesChange={(list: FileInfo[]) => {
-            console.log(list)
             ref.current = list
-            if (!data[keyName]) data[keyName] = [...value]
+            if (!data[keyName] && list.length) data[keyName] = [...value]
             update(id + 1)
           }}
           containerProps={{ style: { display: 'inline-block' } }}

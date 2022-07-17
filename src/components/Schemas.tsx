@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
@@ -41,7 +41,7 @@ const Schemas: React.FC = () => {
   const [editId, setEditId] = useState('')
   const [newName, setNewName] = useState('')
   const { enqueueSnackbar } = useSnackbar()
-  const createFieldPopup = useRef()
+  const createFieldPopup = useRef<{ open(): void }>()
 
   const { loading, error, data } = useQuery(gql`query { key { get { _id localization schema } } }`)
 
@@ -101,7 +101,7 @@ const Schemas: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <CreateFieldPopup ref={createFieldPopup} />
+      <CreateFieldPopup ref={createFieldPopup as any} />
       <Dialog open={!!editId} onClose={() => setEditId('')}>
         <DialogTitle>修改字段</DialogTitle>
         <DialogContent>
@@ -156,7 +156,7 @@ const Schemas: React.FC = () => {
         color='primary'
         aria-label='add'
         sx={{ position: 'fixed', bottom: 36, right: 36 }}
-        onClick={() => createFieldPopup.current.open()}
+        onClick={() => createFieldPopup.current!.open()}
       >
         <AddIcon />
       </Fab>

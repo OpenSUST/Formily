@@ -11,11 +11,11 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
-import Schema from 'schemastery';
-import { useQuery, useApolloClient, gql } from '@apollo/client';
-import { useSnackbar } from 'notistack';
+import Schema from 'schemastery'
+import { useApolloClient, gql } from '@apollo/client'
+import { useSnackbar } from 'notistack'
 
-export default React.forwardRef(function CreateFieldPopup(props, ref) {
+export default React.forwardRef<{ open(): void }>(function CreateFieldPopup (_, ref) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [key, setKey] = React.useState('')
   const [keyType, setType] = React.useState('')

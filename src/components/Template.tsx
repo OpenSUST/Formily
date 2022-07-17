@@ -58,14 +58,14 @@ const Template: React.FC = () => {
   if (error) throw error
   if (loading) return <CircularLoading loading />
 
-  const payload = data.template.get.payload
+  const payload = JSON.parse(data.template.get.payload || '[]')
 
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>模板: 模板名</Typography>
       <Card sx={{ margin: '1rem auto', maxWidth: 500 }}>
         <List>
-          {data2.map(it => (
+          {payload.map((it: any) => (
             <ListItem
               key={it._id}
               secondaryAction={
