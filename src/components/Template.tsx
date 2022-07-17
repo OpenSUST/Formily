@@ -49,10 +49,16 @@ const Template: React.FC = () => {
   const [options, setOptions] = useState<readonly FieldType[]>([])
   const { enqueueSnackbar } = useSnackbar()
   const { id } = useParams<{ id: string }>()
-  const { loading, error, data } = useQuery(GET_DATA, { variables: { id } })
+  const { loading, error, data } = useQuery(gql`
+    query ($id: String!) {
+      template { get(id: $id) { payload } }
+    }
+  `, { variables: { id } })
 
   if (error) throw error
   if (loading) return <CircularLoading loading />
+
+  const payload = data.template.get.payload
 
   return (
     <Container sx={{ mt: 4 }}>
