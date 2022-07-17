@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
@@ -18,10 +18,6 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import IconButton from '@mui/material/IconButton'
-import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
@@ -32,6 +28,7 @@ import { CircularLoading } from './Loading'
 import { useQuery, useApolloClient, gql } from '@apollo/client'
 import Schema from 'schemastery'
 import { useSnackbar } from 'notistack'
+import CreateFieldPopup from './CreateFieldPopup'
 
 const getTypeName = (type: string) => {
   const schema = new Schema(JSON.parse(type))
@@ -41,12 +38,11 @@ const getTypeName = (type: string) => {
 
 const Schemas: React.FC = () => {
   const client = useApolloClient()
-  const [open, setOpen] = useState(false)
   const [editId, setEditId] = useState('')
   const [newName, setNewName] = useState('')
   const { enqueueSnackbar } = useSnackbar()
+  const createFieldPopup = useRef()
 
-  const addKeyData = useMemo(() => ({ key: '', type: '' }), [open])
   const { loading, error, data } = useQuery(gql`query { key { get { _id localization schema } } }`)
 
   if (error) throw error
@@ -105,63 +101,7 @@ const Schemas: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>添加字段</DialogTitle>
-        <DialogContent>
-          <DialogContentText>请在下面输入要创建字段的信息</DialogContentText>
-          <TextField
-            autoFocus
-            fullWidth
-            margin='dense'
-            variant='standard'
-            label='字段名'
-            onChange={e => (addKeyData.key = e.target.value)}
-          />
-          <FormControl fullWidth variant='standard' margin='dense'>
-            <InputLabel id='schema-key-type'>字段类型</InputLabel>
-            <Select
-              labelId='schema-key-type'
-              label='字段类型'
-              defaultValue='text'
-              onChange={e => (addKeyData.type = e.target.value)}
-            >
-              <MenuItem value='text'>文本</MenuItem>
-              <MenuItem value='number'>数字</MenuItem>
-              <MenuItem value='image'>图片</MenuItem>
-              <MenuItem value='csv'>CSV</MenuItem>
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>取消</Button>
-          <Button
-            onClick={() => {
-              setOpen(false)
-              const schema = addKeyData.type === 'number' ? Schema.number() : Schema.string()
-              schema.meta ||= {}
-              if (addKeyData.type !== 'number') schema.meta.kind = addKeyData.type as any
-              client.mutate({
-                mutation: gql`
-                  mutation ($key: String!, $schema: String!) {
-                    key {
-                      add(key: $key, schema: $schema)
-                    }
-                  }
-                `,
-                variables: { key: addKeyData.key, schema: JSON.stringify(schema.toJSON()) }
-              }).then(it => {
-                if (it.errors) throw it.errors
-                enqueueSnackbar('添加字段成功!', { variant: 'success' })
-              }).catch(e => {
-                console.error(e)
-                enqueueSnackbar('添加字段失败!', { variant: 'error' })
-              })
-            }}
-          >
-            确定
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <CreateFieldPopup ref={createFieldPopup} />
       <Dialog open={!!editId} onClose={() => setEditId('')}>
         <DialogTitle>修改字段</DialogTitle>
         <DialogContent>
@@ -179,7 +119,6 @@ const Schemas: React.FC = () => {
         <DialogActions>
           <Button
             onClick={() => {
-              setOpen(false)
               setNewName('')
               setEditId('')
             }}
@@ -188,7 +127,6 @@ const Schemas: React.FC = () => {
           </Button>
           <Button
             onClick={() => {
-              setOpen(false)
               setNewName('')
               setEditId('')
               client.mutate({
@@ -218,7 +156,7 @@ const Schemas: React.FC = () => {
         color='primary'
         aria-label='add'
         sx={{ position: 'fixed', bottom: 36, right: 36 }}
-        onClick={() => setOpen(true)}
+        onClick={() => createFieldPopup.current.open()}
       >
         <AddIcon />
       </Fab>
