@@ -25,7 +25,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import fields from './fields'
 import Field from './fields/Field'
 import { CircularLoading } from './Loading'
-import { GET_DATA, ADD_DATA, UPDATE_DATA, skipFieldsList } from '../api'
+import { GET_DATA, ADD_DATA, UPDATE_DATA, skipFieldsList, ADD_TEMPLATE } from '../api'
 
 import { useQuery, useApolloClient, gql } from '@apollo/client'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -57,6 +57,8 @@ const ItemCard: React.FC = () => {
   const { id } = useParams<{ id?: string }>()
   const [addFieldOpen, setAddFieldOpen] = useState(false)
   const [importTempateOpen, setImportTempateOpen] = useState(false)
+  const [saveTemplateName, setSaveTemplateName] = useState('')
+  const [saveTemplateOpen, setSaveTemplateOpen] = useState(false)
   const [options, setOptions] = useState<readonly FieldType[]>([])
   const [templates, setTemplates] = useState<readonly TemplateType[]>([])
   const [fieldsData, setFieldsData] = useState<any[]>([])
@@ -78,8 +80,8 @@ const ItemCard: React.FC = () => {
     const { items } = data.item.get
     if (!items.length) throw new Error('Empty')
     let _id
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ;[{ _id, ...others }] = items
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ;[{ _id, ...others }] = items
   } else {
     const { loading, error, data } = useQuery(gql`query { key { get(ids: ["title", "images", "description"]) { _id localization schema } } }`)
     data2 = data
@@ -131,6 +133,13 @@ const ItemCard: React.FC = () => {
             setOptions(res.data.key.get.filter((it: any) => !skipFieldsList[it._id])
               .map((i: any) => ({ _id: i._id, name: i.localization?.['zh-CN'] || i._id })))
             setAddFieldOpen(true)
+          }}
+        >
+          添加新字段
+        </Button>
+        <Button
+          onClick={async () => {
+            setSaveTemplateOpen(true)
           }}
         >
           添加新字段
@@ -256,8 +265,30 @@ const ItemCard: React.FC = () => {
           <Button
             onClick={() => {
               setImportTempateOpen(false)
-              // TODO: 导入模板
-              // Do something with selectedTemplate.payload
+              // TODO check overwrite field and prompt?
+              loadState(selectedTemplate!.payload)
+            }}
+          >
+            确定
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={saveTemplateOpen}
+        onClose={() => setSaveTemplateOpen(false)}
+      >
+        <DialogTitle>保存为模板</DialogTitle>
+        <DialogContent>
+          <DialogContentText>请选择需要导入的模板</DialogContentText>
+          <input type='text' value={saveTemplateName} onChange={(e) => setSaveTemplateName(e.target.value)} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSaveTemplateOpen(false)}>取消</Button>
+          <Button
+            onClick={() => {
+              setSaveTemplateOpen(false)
+              const state = dumpState() // returns json object
+              client.mutate({ mutation: ADD_TEMPLATE, variables: { name: saveTemplateName, payload: state } })
             }}
           >
             确定
