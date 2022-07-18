@@ -12,6 +12,7 @@ import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
+import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -21,6 +22,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Container from '@mui/material/Container'
 import SaveIcon from '@mui/icons-material/Save'
+import DeleteIcon from '@mui/icons-material/Delete'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import fields, { defaultValues, typeNameMap } from './fields'
@@ -109,12 +111,28 @@ const ItemCard: React.FC = () => {
     <Container sx={{ mt: 4 }} maxWidth='xl'>
       <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>{(newData as any).title || ''}</Typography>
       <Table sx={{ tableLayout: 'fixed' }}>
-        <TableBody>
+        <TableBody sx={{ '& .key': { width: 100 }, '& .delete': { width: 26, pl: 1 }, '& td': { pl: 0, textAlign: 'justify' } }}>
           {Object.entries(newData).map(([key, value]) => {
             const EditorComponent = ((fields as any)[(schema as any).dict[key]?.meta?.kind as any] || fields.text).EditorComponent as Field<any>['EditorComponent']
             return (
-              <TableRow key={key} sx={{ '& th': { width: 100 }, '& td': { pl: 0, textAlign: 'justify' } }}>
-                <TableCell component='th' scope='row'>{key}</TableCell>
+              <TableRow key={key}>
+                <TableCell component='th' scope='row' className='delete'>
+                  {!(key in skipFieldsList) && (
+                    <IconButton
+                      size='small'
+                      onClick={() => {
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        const { [key]: _, ...newData } = others
+                        formData.current[key] = null
+                        delete pendingList.current[key]
+                        setNewData(newData)
+                      }}
+                    >
+                      <DeleteIcon fontSize='small' />
+                    </IconButton>
+                  )}
+                </TableCell>
+                <TableCell component='th' scope='row' className='key'>{key}</TableCell>
                 <TableCell>
                   <EditorComponent
                     value={value}
