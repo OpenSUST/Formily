@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
+import Schema from 'schemastery'
 
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -9,6 +10,7 @@ import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
 import Chip from '@mui/material/Chip'
 import Fab from '@mui/material/Fab'
 import TextField from '@mui/material/TextField'
@@ -19,55 +21,61 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Container from '@mui/material/Container'
-import AddIcon from '@mui/icons-material/Add'
-import DeleteIcon from '@mui/icons-material/Delete'
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import DeleteIcon from '@mui/icons-material/Delete'
+import SaveIcon from '@mui/icons-material/Save'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import { typeNameMap } from './fields'
-import { openDialog } from './EnsureDialog'
 import { CircularLoading } from './Loading'
-import { GET_DATA } from '../api'
+import { GET_KEYS_DATA, LIST_KEYS, GET_TEMPLATE, UPDATE_TEMPLATE, skipFieldsList } from '../api'
+import { TemplateData, FieldType } from '../types'
 
-import { useQuery, useApolloClient, gql } from '@apollo/client'
+import { useQuery, useApolloClient } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { useParams } from 'react-router-dom'
-
-interface FieldType {
-  _id: string
-  name: string
-}
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
 
-const data2 = [{ title: '字段a', _id: 'a' }, { title: '字段B', type: 'number', _id: 'b' }, { title: '字段C', type: 'image', _id: 'c' }]
-
 const Template: React.FC = () => {
   const client = useApolloClient()
   const [addFieldOpen, setAddFieldOpen] = useState(false)
-  const [fieldsData, setFieldsData] = useState<any[]>([])
+  const [templateData, setTemplateData] = useState<(TemplateData)[]>([])
+  const [fieldsData, setFieldsData] = useState<FieldType[]>([])
   const [options, setOptions] = useState<readonly FieldType[]>([])
   const { enqueueSnackbar } = useSnackbar()
   const { id } = useParams<{ id: string }>()
-  const { loading, error, data } = useQuery(gql`
-    query ($id: String!) {
-      template { get(id: $id) { payload } }
-    }
-  `, { variables: { id } })
+  const { loading, error, data } = useQuery(GET_TEMPLATE, { variables: { id } })
+  const schemas = useRef<Record<string, Schema>>({})
+
+  useEffect(() => {
+    if (!data) return
+    const payload = (typeof data.template.get.payload === 'string' ? JSON.parse(data.template.get.payload || '[]') : data.template.get.payload) as TemplateData[]
+    client.query({ query: GET_KEYS_DATA, variables: { ids: payload.map(it => it.key) } })
+      .then(({ error, data }) => {
+        if (error) throw error
+        setTemplateData((data.key.get as any[]).map(it => {
+          schemas.current[it._id] = new Schema(it.schema)
+          return { key: it._id }
+        }))
+      })
+      .catch(e => {
+        console.error(e)
+        enqueueSnackbar('获取数据失败!', { variant: 'error' })
+      })
+  }, [data])
 
   if (error) throw error
   if (loading) return <CircularLoading loading />
 
-  const payload = JSON.parse(data.template.get.payload || '[]')
-
   return (
     <Container sx={{ mt: 4 }}>
-      <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>模板: 模板名</Typography>
+      <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>模板: {data.template.get.name}</Typography>
       <Card sx={{ margin: '1rem auto', maxWidth: 500 }}>
         <List>
-          {payload.map((it: any) => (
+          {templateData.map(it => (
             <ListItem
-              key={it._id}
+              key={it.key}
               secondaryAction={
                 <IconButton edge='end' onClick={() => { /* TODO: 删除模板字段 */ }}>
                   <DeleteIcon />
@@ -75,11 +83,24 @@ const Template: React.FC = () => {
               }
             >
               <ListItemText
-                primary={<>{it.title} <Chip label={(typeNameMap as any)[it.type || 'text']} size='small' /></>}
+                primary={<>{it.key} <Chip label={(typeNameMap as any)[schemas.current[it.key].meta?.kind || 'text']} size='small' /></>}
               />
             </ListItem>
           ))}
         </List>
+        <CardActions sx={{ justifyContent: 'flex-end' }}>
+          <Button
+            onClick={async () => {
+              const res = await client.query({ query: LIST_KEYS })
+              const arr = res.data.key.get.filter((it: any) => !skipFieldsList[it._id])
+              arr.forEach((it: any) => ({ ...it, schema: new Schema(JSON.stringify(it.schema)) }))
+              setOptions(arr)
+              setAddFieldOpen(true)
+            }}
+          >
+            添加新字段
+          </Button>
+        </CardActions>
       </Card>
       <Dialog
         open={addFieldOpen}
@@ -91,7 +112,7 @@ const Template: React.FC = () => {
           <Autocomplete
             multiple
             isOptionEqualToValue={(a: any, b: any) => a._id === b._id}
-            getOptionLabel={(option: FieldType) => option.name}
+            getOptionLabel={(option: FieldType) => option.localization?.['zh-CN'] || option._id}
             options={options}
             loading={!options.length}
             limitTags={10}
@@ -105,7 +126,7 @@ const Template: React.FC = () => {
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {option.name}
+                {option.localization?.['zh-CN'] || option._id}&nbsp;<Chip label={(typeNameMap as any)[option.schema.meta?.kind || 'text']} size='small' />
               </li>
             )}
             value={fieldsData}
@@ -131,48 +152,32 @@ const Template: React.FC = () => {
           <Button
             onClick={() => {
               setAddFieldOpen(false)
-              // TODO: 添加字段信息
+              setTemplateData(fieldsData.map(it => {
+                schemas.current[it._id] = it.schema
+                return { key: it._id }
+              }))
             }}
           >
             确定
           </Button>
         </DialogActions>
-        <Button
-          onClick={() => {
-            client.mutate(
-              id
-                ? {
-                    mutation: gql`
-                    mutation(id: String!, $name: String!, $payload: JSON!) {
-                      template { update(id: $id, name: $name, payload: $payload) }
-                    }
-                  `,
-                    variables: { id, name: '模板名', payload: fieldsData }
-                  }
-                : {
-                    mutation: gql`
-                    mutation($name: String!, $payload: JSON!) {
-                      template { add(name: $name, payload: $payload) }
-                    }
-                  `,
-                    variables: { name: '模板名', payload: fieldsData }
-                  }).then((it) => {
-              if (it.errors) throw it.errors[0]
-              enqueueSnackbar('添加成功', { variant: 'success' })
-            }).catch(err => {
-              enqueueSnackbar(err.message, { variant: 'error' })
-            })
-          }}
-        >提交
-        </Button>
       </Dialog>
       <Fab
         color='primary'
         aria-label='add'
         sx={{ position: 'fixed', bottom: 36, right: 36 }}
-        onClick={() => setAddFieldOpen(true)}
+        onClick={() => {
+          setAddFieldOpen(true)
+          client.mutate({ mutation: UPDATE_TEMPLATE, variables: { id, name: data.template.get.name, payload: templateData } }).then(({ errors }) => {
+            if (errors?.[0]) throw errors[0]
+            enqueueSnackbar('添加成功', { variant: 'success' })
+          }).catch(err => {
+            console.error(err)
+            enqueueSnackbar('保存失败!', { variant: 'error' })
+          })
+        }}
       >
-        <AddIcon />
+        <SaveIcon />
       </Fab>
     </Container>
   )

@@ -122,9 +122,9 @@ query Request ($id: String!) {
 }`
 
 export const ADD_TEMPLATE = gql`
-mutation {
+mutation ($name: String!) {
   template {
-    add (name: "新建模板", payload: {})
+    add (name: $name, payload: {})
   }
 }`
 
@@ -159,3 +159,40 @@ query ($left: String!, $right: String!) {
   }
   key { get { _id localization } }
 }`
+
+export const LIST_KEYS = gql`query {
+  key {
+    get {
+      _id
+      localization
+      schema
+    }
+  }
+}`
+
+export const GET_KEYS_DATA = gql`
+query ($ids: [String]) {
+  key {
+    get (ids: $ids) {
+      _id
+      localization
+      schema
+    }
+  }
+}`
+
+export const GET_TEMPLATE = gql`
+query ($id: String!) {
+  template {
+    get (id: $id) {
+      name
+      payload
+    }
+  }
+}`
+
+export const UPDATE_TEMPLATE = gql`
+mutation ($id: String!, $name: String!, $payload: JSON!) {
+  template { update (id: $id, name: $name, payload: $payload) }
+}
+`

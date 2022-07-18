@@ -15,18 +15,16 @@ import Schema from 'schemastery'
 import { useApolloClient, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 
-export default React.forwardRef<{ open(): void }>(function CreateFieldPopup (_, ref) {
+export default React.forwardRef(function CreateFieldPopup (_, ref) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [key, setKey] = React.useState('')
   const [keyType, setType] = React.useState('')
   const client = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
 
-  React.useImperativeHandle(ref, () => {
-    return {
-      open: () => setIsOpen(true)
-    }
-  })
+  React.useImperativeHandle(ref, () => ({
+    open: () => setIsOpen(true)
+  }))
 
   return (
     <Dialog open={isOpen} onClose={() => setIsOpen(false)}>

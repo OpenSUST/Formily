@@ -26,32 +26,17 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import fields, { defaultValues, typeNameMap } from './fields'
 import Field from './fields/Field'
 import { CircularLoading } from './Loading'
-import { GET_DATA, ADD_DATA, UPDATE_DATA, skipFieldsList, ADD_TEMPLATE } from '../api'
+import { TemplateData, FieldType, TemplateType } from '../types'
+import { GET_DATA, ADD_DATA, UPDATE_DATA, skipFieldsList, ADD_TEMPLATE, GET_KEYS_DATA, LIST_KEYS, LIST_TEMPLATES, GET_TEMPLATE } from '../api'
 
 import { useQuery, useApolloClient, gql } from '@apollo/client'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
 
-const defaultValue = {
-  image: [],
-  number: 0
-}
-
-interface FieldType {
-  localization: any
-  schema: Schema
-  __typename: string
-  _id: string
-}
-
-interface TemplateType {
-  _id: string
-  name: string
-  payload: string
-}
-
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
+
+type AsyncFunction = () => Promise<void>
 
 const ItemCard: React.FC = () => {
   const navigate = useNavigate()
@@ -69,8 +54,8 @@ const ItemCard: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(null)
 
   const formData = useRef<Record<string, any>>({})
-  const pendingList = useRef<Record<string, (() => Promise<void>)>>({})
-  const onSubmit = useCallback((key: string, fn: () => Promise<void>) => { pendingList.current[key] = fn }, [])
+  const pendingList = useRef<Record<string, AsyncFunction>>({})
+  const onSubmit = useCallback((key: string, fn: AsyncFunction) => { pendingList.current[key] = fn }, [])
 
   const { loading, error, data } = useQuery(id
     ? GET_DATA
@@ -87,7 +72,7 @@ const ItemCard: React.FC = () => {
     }
     const rows = data.key.get
     const others = Object.fromEntries(rows.filter((i: any) => i._id !== '_id')
-      .map((row: any) => [row._id, (defaultValue as any)[(schema as any).dict[row._id]?.meta?.kind as any] || '']))
+      .map((row: any) => [row._id, (defaultValues as any)[(schema as any).dict[row._id]?.meta?.kind]() || '']))
     setNewData(others)
     return [Schema.object(Object.fromEntries(rows.map((row: any) => [row._id, new Schema(JSON.parse(row.schema))]))), others]
   }, [data])
@@ -96,6 +81,29 @@ const ItemCard: React.FC = () => {
   if (loading) return <CircularLoading loading />
 
   const dumpState = () => JSON.stringify([])
+  const loadState = async (templateData: any) => {
+    const templateDataObj: any = {}
+    const ids: string[] = []
+    console.log(templateData)
+    ;((typeof templateData === 'string' ? JSON.parse(templateData || '[]') : templateData) as TemplateData[]).forEach(it => {
+      if (it.key in newData) return
+      ids.push(it.key)
+      templateDataObj[it.key] = it.default
+    })
+    const { error, data } = await client.query({ query: GET_KEYS_DATA, variables: { ids } })
+    if (error) {
+      console.error(error)
+      enqueueSnackbar('导入失败!', { variant: 'error' })
+      return
+    }
+    const obj: any = { ...newData }
+    const arr = data.key.get.filter((it: any) => !skipFieldsList[it._id])
+    arr.forEach((it: any) => {
+      const cur = (schema as any)[it._id] = new Schema(it.schema)
+      obj[it._id] = templateDataObj[it._id] ?? (defaultValues as any)[cur.meta?.kind || 'text']()
+    })
+    setNewData(obj)
+  }
 
   return (
     <Container sx={{ mt: 4 }} maxWidth='xl'>
@@ -124,9 +132,9 @@ const ItemCard: React.FC = () => {
       <Box sx={{ p: 1, textAlign: 'right' }}>
         <Button
           onClick={async () => {
-            const res = await client.query({ query: gql`query { key { get { _id localization schema } } }` })
+            const res = await client.query({ query: LIST_KEYS })
             const arr = res.data.key.get.filter((it: any) => !skipFieldsList[it._id])
-            arr.forEach((it: any) => ({ ...it, schema: new Schema(JSON.stringify(it.schema)) }))
+            arr.forEach((it: any) => ({ ...it, schema: new Schema(JSON.parse(it.schema)) }))
             setOptions(arr)
             setAddFieldOpen(true)
           }}
@@ -135,7 +143,7 @@ const ItemCard: React.FC = () => {
         </Button>
         <Button
           onClick={async () => {
-            const res = await client.query({ query: gql`query { template { search { _id name payload } } }` })
+            const res = await client.query({ query: LIST_TEMPLATES })
             setTemplates(res.data.template.search)
             setImportTempateOpen(true)
           }}
@@ -279,8 +287,15 @@ const ItemCard: React.FC = () => {
           <Button
             onClick={() => {
               setImportTempateOpen(false)
-              // TODO check overwrite field and prompt?
-              loadState(selectedTemplate!.payload)
+              console.log(selectedTemplate)
+              client.query({ query: GET_TEMPLATE, variables: { id: selectedTemplate!._id } })
+                .then(({ error, data }) => {
+                  if (error) throw error
+                  loadState(data.template.get.payload)
+                }).catch(e => {
+                  console.error(e)
+                  enqueueSnackbar('加载模板失败!', { variant: 'error' })
+                })
             }}
           >
             确定
