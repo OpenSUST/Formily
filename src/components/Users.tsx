@@ -97,7 +97,6 @@ const Users: React.FC = () => {
             onChange={e => (addUserData.username = e.target.value)}
           />
           <TextField
-            autoFocus
             fullWidth
             margin='dense'
             variant='standard'

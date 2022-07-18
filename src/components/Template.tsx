@@ -24,6 +24,7 @@ import Container from '@mui/material/Container'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import DeleteIcon from '@mui/icons-material/Delete'
 import SaveIcon from '@mui/icons-material/Save'
+import EditIcon from '@mui/icons-material/Edit'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import { typeNameMap } from './fields'
 import { CircularLoading } from './Loading'
@@ -40,9 +41,11 @@ const checkedIcon = <CheckBoxIcon fontSize='small' />
 const Template: React.FC = () => {
   const client = useApolloClient()
   const [addFieldOpen, setAddFieldOpen] = useState(false)
+  const [editNameOpen, setEditNameOpen] = useState(false)
   const [templateData, setTemplateData] = useState<(TemplateData)[]>([])
   const [fieldsData, setFieldsData] = useState<FieldType[]>([])
   const [options, setOptions] = useState<readonly FieldType[]>([])
+  const [templateName, setTemplateName] = useState('')
   const { enqueueSnackbar } = useSnackbar()
   const { id } = useParams<{ id: string }>()
   const { loading, error, data } = useQuery(GET_TEMPLATE, { variables: { id } })
@@ -50,6 +53,7 @@ const Template: React.FC = () => {
 
   useEffect(() => {
     if (!data) return
+    setTemplateName(data.template.get.name)
     const payload = (typeof data.template.get.payload === 'string' ? JSON.parse(data.template.get.payload || '[]') : data.template.get.payload) as TemplateData[]
     client.query({ query: GET_KEYS_DATA, variables: { ids: payload.map(it => it.key) } })
       .then(({ error, data }) => {
@@ -70,14 +74,16 @@ const Template: React.FC = () => {
 
   return (
     <Container sx={{ mt: 4 }}>
-      <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>模板: {data.template.get.name}</Typography>
+      <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>
+        模板: {templateName} <IconButton onClick={() => setEditNameOpen(true)}><EditIcon /></IconButton>
+      </Typography>
       <Card sx={{ margin: '1rem auto', maxWidth: 500 }}>
         <List>
           {templateData.map(it => (
             <ListItem
               key={it.key}
               secondaryAction={
-                <IconButton edge='end' onClick={() => { /* TODO: 删除模板字段 */ }}>
+                <IconButton edge='end' onClick={() => setTemplateData(templateData.filter(cur => cur.key === it.key))}>
                   <DeleteIcon />
                 </IconButton>
               }
@@ -134,6 +140,7 @@ const Template: React.FC = () => {
             renderInput={(params) => (
               <TextField
                 {...params}
+                variant='standard'
                 label='请选择需要添加的字段'
                 InputProps={{
                   ...params.InputProps,
@@ -162,13 +169,32 @@ const Template: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+        open={editNameOpen}
+        onClose={() => setEditNameOpen(false)}
+      >
+        <DialogTitle>修改模板名</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            fullWidth
+            margin='dense'
+            variant='standard'
+            label='模板名'
+            value={templateName}
+            onChange={e => setTemplateName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditNameOpen(false)}>确定</Button>
+        </DialogActions>
+      </Dialog>
       <Fab
         color='primary'
         aria-label='add'
         sx={{ position: 'fixed', bottom: 36, right: 36 }}
         onClick={() => {
-          setAddFieldOpen(true)
-          client.mutate({ mutation: UPDATE_TEMPLATE, variables: { id, name: data.template.get.name, payload: templateData } }).then(({ errors }) => {
+          client.mutate({ mutation: UPDATE_TEMPLATE, variables: { id, name: templateName, payload: templateData } }).then(({ errors }) => {
             if (errors?.[0]) throw errors[0]
             enqueueSnackbar('添加成功', { variant: 'success' })
           }).catch(err => {

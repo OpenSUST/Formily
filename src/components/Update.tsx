@@ -183,7 +183,6 @@ const ItemCard: React.FC = () => {
       >
         <DialogTitle>添加新字段</DialogTitle>
         <DialogContent>
-          <DialogContentText>请选择需要添加的字段</DialogContentText>
           <Autocomplete
             multiple
             isOptionEqualToValue={(a: any, b: any) => a._id === b._id}
@@ -209,6 +208,7 @@ const ItemCard: React.FC = () => {
             renderInput={(params) => (
               <TextField
                 {...params}
+                variant='standard'
                 label='请选择需要添加的字段'
                 InputProps={{
                   ...params.InputProps,
@@ -257,7 +257,6 @@ const ItemCard: React.FC = () => {
       >
         <DialogTitle>导入模板</DialogTitle>
         <DialogContent>
-          <DialogContentText>请选择需要导入的模板</DialogContentText>
           <Autocomplete
             getOptionLabel={(option: TemplateType) => option.name}
             options={templates}
@@ -268,6 +267,7 @@ const ItemCard: React.FC = () => {
             renderInput={(params) => (
               <TextField
                 {...params}
+                variant='standard'
                 label='请选择需要导入的模板'
                 InputProps={{
                   ...params.InputProps,
