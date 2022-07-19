@@ -40,7 +40,6 @@ const components: Field<string[]> = {
     const ref = useRef<FileInfo[]>([])
     const [id, update] = useState(0)
     const client = useApolloClient()
-    console.log(data[keyName])
     useEffect(() => onSubmit(keyName, () => Promise.all(
       ref.current.map(async it => {
         const { data: { file: { requestUpload: { postURL, formData } } } } =

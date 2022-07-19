@@ -65,18 +65,27 @@ const ItemCard: React.FC = () => {
 
   const [schema, others] = useMemo(() => {
     if (!data) return []
+    let others: any, schema: Schema
     if (id) {
       const rows = data.item.get
+      let _id
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { _id, ...others } = rows.items[0]
-      setNewData(others)
-      return [new Schema(rows.schema), others]
+      ;[{ _id, ...others }] = rows.items
+      schema = new Schema(rows.schema)
+    } else {
+      const rows = data.key.get
+      schema = Schema.object(Object.fromEntries(rows.map((row: any) => [row._id, new Schema(JSON.parse(row.schema))])))
+      others = Object.fromEntries(rows.filter((i: any) => i._id !== '_id')
+        .map((row: any) => [row._id, (defaultValues as any)[(schema as any).dict[row._id]?.meta?.kind]() || '']))
     }
-    const rows = data.key.get
-    const others = Object.fromEntries(rows.filter((i: any) => i._id !== '_id')
-      .map((row: any) => [row._id, (defaultValues as any)[(schema as any).dict[row._id]?.meta?.kind]() || '']))
+    const arr: FieldType[] = []
+    for (const key in others) {
+      if (skipFieldsList[key]) continue
+      arr.push({ _id: key, schema: (schema as any).dict[key], localization: {}, __typename: 'Key' }) // TODO: i18n
+    }
     setNewData(others)
-    return [Schema.object(Object.fromEntries(rows.map((row: any) => [row._id, new Schema(JSON.parse(row.schema))]))), others]
+    setFieldsData(arr)
+    return [schema, others]
   }, [data])
 
   if (error) throw error
@@ -152,8 +161,7 @@ const ItemCard: React.FC = () => {
           onClick={async () => {
             const res = await client.query({ query: LIST_KEYS })
             const arr = res.data.key.get.filter((it: any) => !skipFieldsList[it._id])
-            arr.forEach((it: any) => ({ ...it, schema: new Schema(JSON.parse(it.schema)) }))
-            setOptions(arr)
+            setOptions(arr.map((it: any) => ({ ...it, schema: new Schema(JSON.parse(it.schema)) })))
             setAddFieldOpen(true)
           }}
         >
@@ -187,6 +195,7 @@ const ItemCard: React.FC = () => {
             if (it.errors) throw it.errors
             enqueueSnackbar('保存成功!', { variant: 'success' })
             navigate('/item/' + (id || it.data.item.add))
+            setTimeout(() => location.reload(), 50)
           })
           .catch(e => {
             console.error(e)
@@ -247,8 +256,9 @@ const ItemCard: React.FC = () => {
               setAddFieldOpen(false)
               const obj: any = { title: newData.title, description: newData.description, images: newData.images }
               fieldsData.forEach(it => {
-                const cur = (schema as any)[it._id] = it.schema
+                const cur = (schema as any).dict[it._id] = it.schema
                 obj[it._id] = (defaultValues as any)[cur.meta?.kind || 'text']()
+                if (!(it._id in newData)) formData.current[it._id] = obj[it._id]
               })
               for (const key in formData.current) {
                 if (!(key in obj)) {

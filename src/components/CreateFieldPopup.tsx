@@ -14,6 +14,7 @@ import Select from '@mui/material/Select'
 import Schema from 'schemastery'
 import { useApolloClient, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
+import { typeNameMap } from './fields'
 
 export default React.forwardRef(function CreateFieldPopup (_, ref) {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -47,10 +48,7 @@ export default React.forwardRef(function CreateFieldPopup (_, ref) {
             defaultValue='text'
             onChange={e => setType(e.target.value)}
           >
-            <MenuItem value='text'>文本</MenuItem>
-            <MenuItem value='number'>数字</MenuItem>
-            <MenuItem value='image'>图片</MenuItem>
-            <MenuItem value='csv'>CSV</MenuItem>
+            {Object.entries(typeNameMap).filter(([key]) => !!key).map(([key, value]) => <MenuItem value={key} key={key}>{value}</MenuItem>)}
           </Select>
         </FormControl>
       </DialogContent>
@@ -64,16 +62,17 @@ export default React.forwardRef(function CreateFieldPopup (_, ref) {
             if (keyType !== 'number') schema.meta.kind = keyType as any
             client.mutate({
               mutation: gql`
-                  mutation ($key: String!, $schema: String!) {
-                    key {
-                      add(key: $key, schema: $schema)
-                    }
+                mutation ($key: String!, $schema: String!) {
+                  key {
+                    add(key: $key, schema: $schema)
                   }
-                `,
+                }
+              `,
               variables: { key, schema: JSON.stringify(schema.toJSON()) }
             }).then(it => {
               if (it.errors) throw it.errors
               enqueueSnackbar('添加字段成功!', { variant: 'success' })
+              setTimeout(() => location.reload(), 50)
             }).catch(e => {
               console.error(e)
               enqueueSnackbar('添加字段失败!', { variant: 'error' })

@@ -26,7 +26,7 @@ query Request ($id: String!) {
 export const ADD_DATA = gql`
 mutation ($set: JSON!) {
   item {
-    add(payload: $set)
+    add (payload: $set)
   }
 }
 `
