@@ -45,6 +45,7 @@ const ItemCard: React.FC = () => {
   const client = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
   const { id } = useParams<{ id?: string }>()
+  const [submitting, setSubmitting] = useState(false)
   const [addFieldOpen, setAddFieldOpen] = useState(false)
   const [importTempateOpen, setImportTempateOpen] = useState(false)
   const [saveTemplateName, setSaveTemplateName] = useState('')
@@ -75,8 +76,14 @@ const ItemCard: React.FC = () => {
     } else {
       const rows = data.key.get
       schema = Schema.object(Object.fromEntries(rows.map((row: any) => [row._id, new Schema(JSON.parse(row.schema))])))
-      others = Object.fromEntries(rows.filter((i: any) => i._id !== '_id')
-        .map((row: any) => [row._id, (defaultValues as any)[(schema as any).dict[row._id]?.meta?.kind || 'text']()]))
+      others = { }
+      ;(rows as FieldType[]).forEach(it => {
+        if (it._id === '_id') return
+        const fn = (defaultValues as any)[(schema as any).dict[it._id]?.meta?.kind || 'text']
+        others[it._id] = fn()
+        formData.current[it._id] = fn()
+      })
+      Object.assign(formData.current, others)
     }
     const arr: FieldType[] = []
     for (const key in others) {
@@ -189,19 +196,28 @@ const ItemCard: React.FC = () => {
       <Fab
         color='primary'
         aria-label='save'
+        disabled={submitting}
         sx={{ position: 'fixed', bottom: 36, right: 36 }}
-        onClick={() => Promise.all(Object.values(pendingList.current))
-          .then(() => client.mutate({ mutation: id ? UPDATE_DATA : ADD_DATA, variables: { id, set: formData.current } }))
-          .then(it => {
-            if (it.errors) throw it.errors
-            enqueueSnackbar('保存成功!', { variant: 'success' })
-            navigate('/item/' + (id || it.data.item.add))
-            setTimeout(() => location.reload(), 50)
-          })
-          .catch(e => {
-            console.error(e)
-            enqueueSnackbar('保存失败!', { variant: 'error' })
-          })}
+        onClick={() => {
+          if (formData.current.title === '') {
+            enqueueSnackbar('请填写项目标题!', { variant: 'error' })
+            return
+          }
+          setSubmitting(true)
+          Promise.all(Object.values(pendingList.current).map(fn => fn()))
+            .then(() => client.mutate({ mutation: id ? UPDATE_DATA : ADD_DATA, variables: { id, set: formData.current } }))
+            .then(it => {
+              if (it.errors) throw it.errors
+              enqueueSnackbar('保存成功!', { variant: 'success' })
+              navigate('/item/' + (id || it.data.item.add))
+              setTimeout(() => location.reload(), 50)
+            })
+            .catch(e => {
+              console.error(e)
+              enqueueSnackbar('保存失败!', { variant: 'error' })
+            })
+            .then(() => setSubmitting(false))
+        }}
       >
         <SaveIcon />
       </Fab>
@@ -316,7 +332,6 @@ const ItemCard: React.FC = () => {
           <Button
             onClick={() => {
               setImportTempateOpen(false)
-              console.log(selectedTemplate)
               client.query({ query: GET_TEMPLATE, variables: { id: selectedTemplate!._id } })
                 .then(({ error, data }) => {
                   if (error) throw error

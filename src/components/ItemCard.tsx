@@ -18,7 +18,15 @@ import { useSnackbar } from 'notistack'
 
 const ItemCard: React.FC<{ image: string, title: string, description: string, id: string }> = ({ image, title, description, id }) => {
   const navigate = useNavigate()
-  const [isFavorite, setFavorite] = useState(() => id in JSON.parse(localStorage.getItem('favorites') || '{}'))
+  const [isFavorite, setFavorite] = useState(() => {
+    const data = JSON.parse(localStorage.getItem('favorites') || '{}')
+    const res = id in data
+    if (res) {
+      data[id] = { title, image, description }
+      localStorage.setItem('favorites', JSON.stringify(data))
+    }
+    return res
+  })
   const [anchorEl, setAnchorEl] = useState<HTMLElement>()
   const client = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
