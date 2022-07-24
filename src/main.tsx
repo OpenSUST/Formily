@@ -2,6 +2,7 @@ import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
+import 'handsontable/dist/handsontable.full.css'
 import 'react-medium-image-zoom/dist/styles.css'
 
 import React from 'react'
@@ -13,6 +14,14 @@ import { zhCN as dataGridLang } from '@mui/x-data-grid'
 import { zhCN } from '@mui/material/locale'
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
+import { registerLanguageDictionary, zhCN as HandsonTableZHCN } from 'handsontable/i18n'
+import {
+  registerPlugin,
+  UndoRedo
+} from 'handsontable/plugins'
+
+registerPlugin(UndoRedo)
+registerLanguageDictionary(HandsonTableZHCN)
 
 const theme = createTheme(
   {},
@@ -34,8 +43,8 @@ const client = new ApolloClient({
 })
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  <>
     <CssBaseline />
     <ApolloProvider client={client}><ThemeProvider theme={theme}><App /></ThemeProvider></ApolloProvider>
-  </React.StrictMode>
+  </>
 )

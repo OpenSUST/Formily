@@ -10,6 +10,7 @@ import TableRow from '@mui/material/TableRow'
 import Container from '@mui/material/Container'
 import ItemCard from './ItemCard'
 import fields from './fields'
+import Field from './fields/Field'
 import { CircularLoading } from './Loading'
 import { GET_DATA } from '../api'
 
@@ -43,11 +44,11 @@ const Item: React.FC = () => {
           <Table sx={{ tableLayout: 'fixed' }}>
             <TableBody>
               {Object.entries(others).map(([key, value]) => {
-                const ViewComponent = ((fields as any)[schema.dict[key]?.meta?.kind] || fields.text).ViewComponent
+                const ViewComponent: Field<any>['ViewComponent'] = ((fields as any)[schema.dict[key]?.meta?.kind] || fields.text).ViewComponent
                 return (
                   <TableRow key={key} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 100 }, '& td': { pl: 0, textAlign: 'justify' }, '& th, & td': { verticalAlign: 'top' } }}>
                     <TableCell component='th' scope='row'>{key}</TableCell>
-                    <TableCell><ViewComponent value={value} /></TableCell>
+                    <TableCell><ViewComponent value={value as any} keyName={key} key={key} /></TableCell>
                   </TableRow>
                 )
               })}

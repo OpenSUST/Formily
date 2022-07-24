@@ -38,7 +38,7 @@ import { useSnackbar } from 'notistack'
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
 
-type AsyncFunction = () => Promise<void>
+type AsyncFunction = (old: any) => Promise<void> | void
 
 const ItemCard: React.FC = () => {
   const navigate = useNavigate()
@@ -152,6 +152,7 @@ const ItemCard: React.FC = () => {
                 <TableCell component='th' scope='row' className='key'>{key}</TableCell>
                 <TableCell>
                   <EditorComponent
+                    key={key}
                     value={value}
                     name={key}
                     keyName={key}
@@ -204,13 +205,13 @@ const ItemCard: React.FC = () => {
             return
           }
           setSubmitting(true)
-          Promise.all(Object.values(pendingList.current).map(fn => fn()))
+          Promise.all(Object.entries(pendingList.current).map(([key, fn]) => fn(newData[key])))
             .then(() => client.mutate({ mutation: id ? UPDATE_DATA : ADD_DATA, variables: { id, set: formData.current } }))
             .then(it => {
               if (it.errors) throw it.errors
               enqueueSnackbar('保存成功!', { variant: 'success' })
               navigate('/item/' + (id || it.data.item.add))
-              setTimeout(() => location.reload(), 50)
+              // setTimeout(() => location.reload(), 100)
             })
             .catch(e => {
               console.error(e)
