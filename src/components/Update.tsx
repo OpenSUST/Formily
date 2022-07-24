@@ -76,7 +76,7 @@ const ItemCard: React.FC = () => {
       const rows = data.key.get
       schema = Schema.object(Object.fromEntries(rows.map((row: any) => [row._id, new Schema(JSON.parse(row.schema))])))
       others = Object.fromEntries(rows.filter((i: any) => i._id !== '_id')
-        .map((row: any) => [row._id, (defaultValues as any)[(schema as any).dict[row._id]?.meta?.kind]() || '']))
+        .map((row: any) => [row._id, (defaultValues as any)[(schema as any).dict[row._id]?.meta?.kind || 'text']()]))
     }
     const arr: FieldType[] = []
     for (const key in others) {
@@ -95,8 +95,9 @@ const ItemCard: React.FC = () => {
   const loadState = async (templateData: any) => {
     const templateDataObj: any = {}
     const ids: string[] = []
-    console.log(templateData)
-    ;((typeof templateData === 'string' ? JSON.parse(templateData || '[]') : templateData) as TemplateData[]).forEach(it => {
+    if (typeof templateData === 'string') templateData = JSON.parse(templateData || '[]')
+    if (!Array.isArray(templateData)) templateData = []
+    ;(templateData as TemplateData[]).forEach(it => {
       if (it.key in newData) return
       ids.push(it.key)
       templateDataObj[it.key] = it.default

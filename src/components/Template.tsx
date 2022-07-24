@@ -54,7 +54,8 @@ const Template: React.FC = () => {
   useEffect(() => {
     if (!data) return
     setTemplateName(data.template.get.name)
-    const payload = (typeof data.template.get.payload === 'string' ? JSON.parse(data.template.get.payload || '[]') : data.template.get.payload) as TemplateData[]
+    let payload = (typeof data.template.get.payload === 'string' ? JSON.parse(data.template.get.payload || '[]') : data.template.get.payload) as TemplateData[]
+    if (!Array.isArray(payload)) payload = []
     client.query({ query: GET_KEYS_DATA, variables: { ids: payload.map(it => it.key) } })
       .then(({ error, data }) => {
         if (error) throw error
@@ -83,7 +84,7 @@ const Template: React.FC = () => {
             <ListItem
               key={it.key}
               secondaryAction={
-                <IconButton edge='end' onClick={() => setTemplateData(templateData.filter(cur => cur.key === it.key))}>
+                <IconButton edge='end' onClick={() => setTemplateData(templateData.filter(cur => cur.key !== it.key))}>
                   <DeleteIcon />
                 </IconButton>
               }
