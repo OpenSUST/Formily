@@ -23,6 +23,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import { skipFieldsList } from '../api'
 import { typeNameMap } from './fields'
+import { openDialog } from './EnsureDialog'
 import { CircularLoading } from './Loading'
 
 import { useQuery, useApolloClient, gql } from '@apollo/client'
@@ -76,22 +77,21 @@ const Schemas: React.FC = () => {
                   <IconButton
                     edge='end'
                     size='small'
-                    onClick={() => {
-                      client.mutate({
-                        mutation: gql`
-                          mutation ($key: String!) {
-                            key { del(key: $key) }
-                          }
-                        `,
-                        variables: { key: editId }
-                      }).then(it => {
-                        if (it.errors) throw it.errors
-                        enqueueSnackbar('添加字段成功!', { variant: 'success' })
-                      }).catch(e => {
-                        console.error(e)
-                        enqueueSnackbar('添加字段失败!', { variant: 'error' })
-                      })
-                    }}
+                    onClick={() => openDialog('确认删除该字段?').then(res => res && client.mutate({
+                      mutation: gql`
+                        mutation ($key: String!) {
+                          key { del(key: $key) }
+                        }
+                      `,
+                      variables: { key: row._id }
+                    }).then(it => {
+                      if (it.errors) throw it.errors
+                      enqueueSnackbar('删除字段成功!', { variant: 'success' })
+                      setTimeout(() => location.reload(), 100)
+                    }).catch(e => {
+                      console.error(e)
+                      enqueueSnackbar('删除字段失败!', { variant: 'error' })
+                    }) as any)}
                   >
                     <DeleteIcon fontSize='small' />
                   </IconButton>

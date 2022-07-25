@@ -27,7 +27,7 @@ const components: Field<string> = {
         >
           导出文件
         </Button>
-        <div style={{ height: 500, width: '100%', marginTop: 8 }}>
+        <div style={{ height: 400, width: '100%', marginTop: 8 }}>
           <HotTable
             colHeaders
             rowHeaders
@@ -91,7 +91,7 @@ const components: Field<string> = {
             }}
           />
         </Button>
-        <div style={{ height: 500, width: '100%', marginTop: 8 }}>
+        <div style={{ height: 400, width: '100%', marginTop: 8 }}>
           <HotTable
             colHeaders
             rowHeaders

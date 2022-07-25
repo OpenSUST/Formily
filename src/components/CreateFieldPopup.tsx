@@ -11,10 +11,10 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
-import Schema from 'schemastery'
 import { useApolloClient, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
-import { typeNameMap } from './fields'
+import { typeNameMap, defaultSchemas } from './fields'
+import { Kind } from '../types'
 
 export default React.forwardRef(function CreateFieldPopup (_, ref) {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -57,9 +57,6 @@ export default React.forwardRef(function CreateFieldPopup (_, ref) {
         <Button
           onClick={() => {
             setIsOpen(false)
-            const schema = keyType === 'number' ? Schema.number() : Schema.string()
-            schema.meta ||= {}
-            if (keyType !== 'number') schema.meta.kind = keyType as any
             client.mutate({
               mutation: gql`
                 mutation ($key: String!, $schema: String!) {
@@ -68,7 +65,7 @@ export default React.forwardRef(function CreateFieldPopup (_, ref) {
                   }
                 }
               `,
-              variables: { key, schema: JSON.stringify(schema.toJSON()) }
+              variables: { key, schema: JSON.stringify(defaultSchemas[keyType as Kind].toJSON()) }
             }).then(it => {
               if (it.errors) throw it.errors
               enqueueSnackbar('添加字段成功!', { variant: 'success' })
