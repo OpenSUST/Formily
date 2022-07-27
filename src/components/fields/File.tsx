@@ -5,19 +5,9 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-// @ts-ignore
-import FileUpload from 'react-mui-fileuploader'
+import FileUpload, { FileObject } from '../FileUploader'
 import { UPLOAD } from '../../api'
 import { useApolloClient } from '@apollo/client'
-
-interface FileInfo {
-  name: string
-  size: number
-  path: string
-  contentType: string
-  lastModified: Date
-  extension: string
-}
 
 function dataURItoBlob (dataURI: string) {
   const byteString = atob(dataURI.split(',')[1])
@@ -52,13 +42,13 @@ const components: Field<string[]> = {
     )
   },
   EditorComponent ({ value, keyName, data, onSubmit }) {
-    const ref = useRef<FileInfo[]>([])
+    const ref = useRef<FileObject[]>([])
     const [id, update] = useState(0)
     const client = useApolloClient()
     useEffect(() => onSubmit(keyName, () => Promise.all(
       ref.current.map(async it => {
         const { data: { file: { requestUpload: { postURL, formData } } } } =
-          await client.query({ query: UPLOAD, variables: { ext: it.extension, size: it.size } })
+          await client.query({ query: UPLOAD, variables: { ext: it.name.slice(it.name.lastIndexOf('.') + 1), size: it.size } })
         const body = new FormData()
         for (const k in formData) body.append(k, formData[k])
         body.append('file', dataURItoBlob(it.path))
@@ -99,8 +89,9 @@ const components: Field<string[]> = {
           errorSizeMessage='文件过大'
           buttonRemoveLabel='清除全部'
           maxFileSize={100}
-          onFilesChange={(list: FileInfo[]) => {
+          onFilesChange={list => {
             ref.current = list
+            console.log(list)
             if (!data[keyName] && list.length) data[keyName] = [...value]
             update(id + 1)
           }}

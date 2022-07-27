@@ -4,19 +4,9 @@ import Field from './Field'
 import Zoom from 'react-medium-image-zoom'
 import ClearIcon from '@mui/icons-material/Clear'
 import Box from '@mui/material/Box'
-// @ts-ignore
-import FileUpload from 'react-mui-fileuploader'
+import FileUpload, { FileObject } from '../FileUploader'
 import { UPLOAD } from '../../api'
 import { useApolloClient } from '@apollo/client'
-
-interface FileInfo {
-  name: string
-  size: number
-  path: string
-  contentType: string
-  lastModified: number
-  extension: string
-}
 
 function dataURItoBlob (dataURI: string) {
   const byteString = atob(dataURI.split(',')[1])
@@ -37,13 +27,13 @@ const components: Field<string[]> = {
     )
   },
   EditorComponent ({ value, keyName, data, onSubmit }) {
-    const ref = useRef<FileInfo[]>([])
+    const ref = useRef<FileObject[]>([])
     const [id, update] = useState(0)
     const client = useApolloClient()
     useEffect(() => onSubmit(keyName, () => Promise.all(
       ref.current.map(async it => {
         const { data: { file: { requestUpload: { postURL, formData } } } } =
-          await client.query({ query: UPLOAD, variables: { ext: it.extension, size: it.size } })
+          await client.query({ query: UPLOAD, variables: { ext: it.name.slice(it.name.lastIndexOf('.') + 1), size: it.size } })
         const body = new FormData()
         for (const k in formData) body.append(k, formData[k])
         body.append('file', dataURItoBlob(it.path))
@@ -96,9 +86,8 @@ const components: Field<string[]> = {
           maxFileSize={10}
           // eslint-disable-next-line react/jsx-handler-names
           onError={console.error}
-          name={keyName}
           allowedExtensions={['jpg', 'jpeg', 'png', 'gif', 'webp']}
-          onFilesChange={(list: FileInfo[]) => {
+          onFilesChange={list => {
             ref.current = list
             if (!data[keyName] && list.length) data[keyName] = [...value]
             update(id + 1)
