@@ -19,6 +19,7 @@
     "@mui/material": "^5.8.6",
     "@mui/styles": "^5.8.7",
     "@mui/x-data-grid": "^5.12.3",
+    "buffer": "^6.0.3",
     "graphql": "^16.5.0",
     "handsontable": "^12.1.2",
     "iconv-lite": "^0.6.3",
