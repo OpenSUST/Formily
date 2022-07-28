@@ -91,7 +91,6 @@ const components: Field<string[]> = {
           maxFileSize={100}
           onFilesChange={list => {
             ref.current = list
-            console.log(list)
             if (!data[keyName] && list.length) data[keyName] = [...value]
             update(id + 1)
           }}

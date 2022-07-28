@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import Button from '@mui/material/Button'
 import Field from './Field'
-import { decode } from 'iconv-lite'
 import { HotTable } from '@handsontable/react'
 import { registerAllModules } from 'handsontable/registry'
 
@@ -87,7 +86,15 @@ const components: Field<string> = {
               const instance = hotTableComponent.current?.__hotInstance
               if (!file || !instance) return
               const reader = new FileReader()
-              reader.onload = () => instance.loadData(decode(reader.result as ArrayBuffer, 'gbk').replace(/\r/g, '').split('\n').map(it => it.split(',')))
+              reader.onload = async () => {
+                let text: string
+                try {
+                  text = new window.TextDecoder('gbk').decode(reader.result as ArrayBuffer)
+                } catch {
+                  text = await new Blob([reader.result as ArrayBuffer], { type: 'text/plain; charset=utf-8' }).text()
+                }
+                instance.loadData(text.replace(/\r/g, '').split('\n').map(it => it.split(',')))
+              }
               reader.readAsArrayBuffer(file)
             }}
           />

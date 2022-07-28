@@ -6,7 +6,6 @@ import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
-import TableHead from '@mui/material/TableHead'
 import Container from '@mui/material/Container'
 import ItemCard from './ItemCard'
 import fields from './fields'
@@ -39,7 +38,15 @@ const Compare: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [{ title: titleRight, description: descriptionRight, _id: idRight, ...othersRight }] = itemsRight
 
-  const arr: JSX.Element[] = []
+  const arr: JSX.Element[] = [
+    (
+      <TableRow key={999999999}>
+        <TableCell component='th' scope='row'>字段名</TableCell>
+        <TableCell>{titleLeft}</TableCell>
+        <TableCell>{titleRight}</TableCell>
+      </TableRow>
+    )
+  ]
   const leftHas: JSX.Element[] = []
   const rightHas: JSX.Element[] = []
 
@@ -74,15 +81,8 @@ const Compare: React.FC = () => {
           <ItemCard title={titleRight} description={descriptionRight} image={othersRight.images[0]} id={right!} />
         </Grid>
         <Grid item sx={{ flex: '1', width: 0 }}>
-          <Table sx={{ tableLayout: 'fixed' }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>字段名</TableCell>
-                <TableCell>{titleLeft}</TableCell>
-                <TableCell>{titleRight}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>{arr}</TableBody>
+          <Table sx={{ tableLayout: 'fixed', '& th': { width: 100 } }}>
+            <TableBody>{arr}{leftHas}{rightHas}</TableBody>
           </Table>
         </Grid>
       </Grid>

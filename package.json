@@ -22,7 +22,6 @@
     "buffer": "^6.0.3",
     "graphql": "^16.5.0",
     "handsontable": "^12.1.2",
-    "iconv-lite": "^0.6.3",
     "notistack": "^2.0.5",
     "preview-office-docs": "^1.0.2",
     "react": "^18.0.0",
