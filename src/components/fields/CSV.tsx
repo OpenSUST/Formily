@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useMemo, useRef } from 'react'
+import Button from '@mui/material/Button'
 import Field from './Field'
+import { decode } from 'iconv-lite'
 import { HotTable } from '@handsontable/react'
 import { registerAllModules } from 'handsontable/registry'
-import Button from '@mui/material/Button'
 
 registerAllModules()
 
@@ -86,8 +87,8 @@ const components: Field<string> = {
               const instance = hotTableComponent.current?.__hotInstance
               if (!file || !instance) return
               const reader = new FileReader()
-              reader.onload = () => instance.loadData((reader.result as string).replace(/\r/g, '').split('\n').map(it => it.split(',')))
-              reader.readAsText(file, 'UTF-8')
+              reader.onload = () => instance.loadData(decode(reader.result as ArrayBuffer, 'GBK').replace(/\r/g, '').split('\n').map(it => it.split(',')))
+              reader.readAsArrayBuffer(file)
             }}
           />
         </Button>
