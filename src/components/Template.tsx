@@ -100,8 +100,7 @@ const Template: React.FC = () => {
             onClick={async () => {
               const res = await client.query({ query: LIST_KEYS })
               const arr = res.data.key.get.filter((it: any) => !skipFieldsList[it._id])
-              arr.forEach((it: any) => ({ ...it, schema: new Schema(JSON.stringify(it.schema)) }))
-              setOptions(arr)
+              setOptions(arr.map((it: any) => ({ ...it, schema: new Schema(JSON.parse(it.schema)) })))
               setAddFieldOpen(true)
             }}
           >
