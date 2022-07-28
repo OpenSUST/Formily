@@ -87,7 +87,7 @@ const components: Field<string> = {
               const instance = hotTableComponent.current?.__hotInstance
               if (!file || !instance) return
               const reader = new FileReader()
-              reader.onload = () => instance.loadData(decode(reader.result as ArrayBuffer, 'GBK').replace(/\r/g, '').split('\n').map(it => it.split(',')))
+              reader.onload = () => instance.loadData(decode(reader.result as ArrayBuffer, 'gbk').replace(/\r/g, '').split('\n').map(it => it.split(',')))
               reader.readAsArrayBuffer(file)
             }}
           />
