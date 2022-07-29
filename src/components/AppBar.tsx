@@ -23,12 +23,12 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
-import AdbIcon from '@mui/icons-material/Adb'
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark'
 import { useSnackbar } from 'notistack'
 import { useNavigate } from 'react-router-dom'
 import { useApolloClient } from '@apollo/client'
 import { FavoriteType } from '../types'
+import { name, userMenuName } from '../../config.json'
 import { isLogin, username, isAdmin, AUTH, LOGOUT } from '../api'
 
 const ResponsiveAppBar = () => {
@@ -46,7 +46,6 @@ const ResponsiveAppBar = () => {
     <AppBar position='fixed'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
             variant='h6'
             noWrap
@@ -55,16 +54,14 @@ const ResponsiveAppBar = () => {
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none'
             }}
           >
-            LOGO
+            {name}
           </Typography>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant='h5'
             noWrap
@@ -74,14 +71,13 @@ const ResponsiveAppBar = () => {
               mr: 2,
               display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
-              fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none'
             }}
           >
-            LOGO
+            {name}
           </Typography>
 
           <Box sx={{ flexGrow: 0, ml: 'auto' }}>
@@ -131,7 +127,7 @@ const ResponsiveAppBar = () => {
                     navigate('/users')
                   }}
                 >
-                  <Typography textAlign='center'>用户管理</Typography>
+                  <Typography textAlign='center'>{userMenuName}用户管理</Typography>
                 </MenuItem>
               )}
               {isAdmin && (

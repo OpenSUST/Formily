@@ -64,6 +64,9 @@ query {
   item {
     count
   }
+  key {
+    count
+  }
 }`
 
 export const AUTH = gql`

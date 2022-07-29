@@ -21,6 +21,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import FavoriteIcon from '@mui/icons-material/Star'
 import CardContent from '@mui/material/CardContent'
 import { GET_ALL_COUNT, SEARCH } from '../api'
+import { name } from '../../config.json'
 
 import { useQuery, useApolloClient } from '@apollo/client'
 import { useSnackbar } from 'notistack'
@@ -37,6 +38,7 @@ const Home: React.FC = () => {
   const { data } = useQuery(GET_ALL_COUNT)
 
   const handleSearch = () => {
+    if (!keyword) return
     setSearchData(undefined)
     client.query({ query: SEARCH, variables: { keyword } }).then(({ error, data }) => {
       if (error) throw error
@@ -62,7 +64,7 @@ const Home: React.FC = () => {
           backgroundAttachment: 'fixed'
         }}
       >
-        <Typography variant='h2' sx={{ mt: '-18vh', mb: 3, color: '#fff', fontWeight: 'bold' }}>LOGO</Typography>
+        <Typography variant='h2' sx={{ mt: '-18vh', mb: 3, color: '#fff', fontWeight: 'bold' }}>{name}</Typography>
         <Autocomplete
           freeSolo
           disableClearable
@@ -152,15 +154,15 @@ const Home: React.FC = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} sm={4} sx={{ textAlign: 'center', borderRight: { sm: '1px solid #eee' } }}>
               <Typography variant='h3' color='primary' sx={{ fontWeight: 'bold' }}>{data?.item?.count || 0}</Typography>
-              <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mt: 1 }}>总条目数</Typography>
+              <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mt: 1 }}>条目总数</Typography>
             </Grid>
             <Grid item xs={12} sm={4} sx={{ textAlign: 'center', borderRight: { sm: '1px solid #eee' } }}>
               <Typography variant='h3' color='primary' sx={{ fontWeight: 'bold' }}>{data?.user?.count || 0}</Typography>
-              <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mt: 1 }}>总用户数</Typography>
+              <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mt: 1 }}>用户总数</Typography>
             </Grid>
             <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
-              <Typography variant='h3' color='primary' sx={{ fontWeight: 'bold' }}>100h+</Typography>
-              <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mt: 1 }}>运行时间</Typography>
+              <Typography variant='h3' color='primary' sx={{ fontWeight: 'bold' }}>{data?.key?.count || 0}</Typography>
+              <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mt: 1 }}>字段总数</Typography>
             </Grid>
           </Grid>
         </Container>
