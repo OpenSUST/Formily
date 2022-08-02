@@ -72,7 +72,8 @@ function App () {
         <EnsureDialog />
         <ErrorBoundary>
           <Routes>
-            <Route path='home' element={<Home />} />
+            <Route path='/' element={<Home />} />
+            <Route path='/home' element={<Home />} />
             <Route path='item/:id' element={<Item />} />
             <Route path='create' element={<Update />} />
             <Route path='update/:id' element={<Update />} />
