@@ -3,8 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "start": "vite --port 1234",
-    "build": "tsc && vite build",
+    "start": "",
+    "dev": "vite --port 1234",
+    "build": "vite build --base=./",
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx,js,jsx",
     "fix": "eslint src --fix --ext ts,tsx,js,jsx"
@@ -28,7 +29,8 @@
     "react-dom": "^18.0.0",
     "react-medium-image-zoom": "^4.4.3",
     "react-router-dom": "^6.3.0",
-    "schemastery": "^3.4.3"
+    "schemastery": "^3.4.3",
+    "vercel": "^27.3.3"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
