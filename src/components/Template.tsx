@@ -80,7 +80,7 @@ const Template: React.FC = () => {
       </Typography>
       <Card sx={{ margin: '1rem auto', maxWidth: 500 }}>
         <List>
-          {templateData.map(it => (
+          {templateData.filter(it => !skipFieldsList[it.key]).map(it => (
             <ListItem
               key={it.key}
               secondaryAction={

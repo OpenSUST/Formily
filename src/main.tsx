@@ -9,8 +9,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import CssBaseline from '@mui/material/CssBaseline'
-import { color } from '../config.json'
 import * as colors from '@mui/material/colors'
+import { name, color } from '../config.json'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { zhCN as dataGridLang } from '@mui/x-data-grid'
 import { zhCN } from '@mui/material/locale'
@@ -18,6 +18,8 @@ import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@ap
 import { setContext } from '@apollo/client/link/context'
 import { registerLanguageDictionary, zhCN as HandsonTableZHCN } from 'handsontable/i18n'
 import { registerPlugin, UndoRedo } from 'handsontable/plugins'
+
+document.title = name
 
 registerPlugin(UndoRedo)
 registerLanguageDictionary(HandsonTableZHCN)

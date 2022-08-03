@@ -10,6 +10,8 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Collapse from '@mui/material/Collapse'
 import Card from '@mui/material/Card'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
@@ -18,7 +20,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Divider from '@mui/material/Divider'
 import SearchIcon from '@mui/icons-material/Search'
-import FavoriteIcon from '@mui/icons-material/Star'
+// import FavoriteIcon from '@mui/icons-material/Star'
 import CardContent from '@mui/material/CardContent'
 import { GET_ALL_COUNT, SEARCH } from '../api'
 import { name } from '../../config.json'
@@ -26,14 +28,15 @@ import { name } from '../../config.json'
 import { useQuery, useApolloClient } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { useNavigate } from 'react-router-dom'
-import { ItemType, FavoriteType } from '../types'
+import { ItemType } from '../types'
 
 const Home: React.FC = () => {
   const navigate = useNavigate()
   const client = useApolloClient()
   const [keyword, setKeyword] = useState('')
   const [searchData, setSearchData] = useState<ItemType[]>()
-  const [favorites, setFavorites] = useState<Record<string, FavoriteType>>(() => JSON.parse(localStorage.getItem('favorites') || '{}'))
+  const [selectedItems, setSelectedItems] = useState<string[]>([])
+  // const [favorites, setFavorites] = useState<Record<string, FavoriteType>>(() => JSON.parse(localStorage.getItem('favorites') || '{}'))
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery(GET_ALL_COUNT)
 
@@ -105,40 +108,57 @@ const Home: React.FC = () => {
           <Card sx={{ mt: 1 }}>
             {searchData?.length
               ? (
-                <List>
-                  {searchData.map((it, i) => (
-                    <React.Fragment key={it._id}>
-                      {i ? <Divider /> : undefined}
-                      <ListItem
-                        disablePadding
-                        alignItems='flex-start'
-                        secondaryAction={
-                          <IconButton
-                            edge='end'
-                            color={it._id in favorites ? 'warning' : undefined}
-                            onClick={() => {
-                              const obj = { ...favorites }
-                              if (it._id in obj) delete (obj as any)[it._id]
-                              else obj[it._id] = { title: it.title, image: it.images?.[0], description: it.description }
-                              localStorage.setItem('favorites', JSON.stringify(obj))
-                              setFavorites(obj)
-                            }}
-                          >
-                            <FavoriteIcon />
-                          </IconButton>
-                        }
-                      >
-                        <ListItemButton onClick={() => navigate('/item/' + it._id)}>
-                          <ListItemAvatar>
-                            <Avatar alt={it.title} src={it.images?.[0]}>{it.images?.[0] ? undefined : it.title[0]}</Avatar>
-                          </ListItemAvatar>
-                          <ListItemText primary={it.title} secondary={it.description} />
-                        </ListItemButton>
-                      </ListItem>
-                    </React.Fragment>
-                  ))}
-                </List>
-                )
+                <>
+                  <List>
+                    {searchData.map((it, i) => (
+                      <React.Fragment key={it._id}>
+                        {i ? <Divider /> : undefined}
+                        <ListItem
+                          disablePadding
+                          alignItems='flex-start'
+                          secondaryAction={
+                            <Checkbox
+                              edge='start'
+                              checked={selectedItems[0] === it._id || selectedItems[1] === it._id}
+                              tabIndex={-1}
+                              onChange={e => setSelectedItems(e.target.checked
+                                ? [selectedItems[1], it._id]
+                                : selectedItems[0] === it._id ? [selectedItems[1]] : [selectedItems[0]])}
+                            />
+                            // <IconButton
+                            //   edge='end'
+                            //   color={it._id in favorites ? 'warning' : undefined}
+                            //   onClick={() => {
+                            //     const obj = { ...favorites }
+                            //     if (it._id in obj) delete (obj as any)[it._id]
+                            //     else obj[it._id] = { title: it.title, image: it.images?.[0], description: it.description }
+                            //     localStorage.setItem('favorites', JSON.stringify(obj))
+                            //     setFavorites(obj)
+                            //   }}
+                            // >
+                            //   <FavoriteIcon />
+                            // </IconButton>
+                          }
+                        >
+                          <ListItemButton onClick={() => navigate('/item/' + it._id)}>
+                            <ListItemAvatar>
+                              <Avatar alt={it.title} src={it.images?.[0]}>{it.images?.[0] ? undefined : it.title[0]}</Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={it.title} secondary={it.description} />
+                          </ListItemButton>
+                        </ListItem>
+                      </React.Fragment>
+                    ))}
+                  </List>
+                  <Box sx={{ textAlign: 'right' }}>
+                    <Button
+                      disabled={!(selectedItems[0] && selectedItems[1])}
+                      onClick={() => navigate(`/compare/${selectedItems[0]}/${selectedItems[1]}`)}
+                    >
+                      对比
+                    </Button>
+                  </Box>
+                </>)
               : <CardContent>无结果</CardContent>}
           </Card>
         </Collapse>

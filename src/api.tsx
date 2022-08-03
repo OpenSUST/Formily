@@ -52,7 +52,7 @@ query {
 export const ADD_USER = gql`
 query Request ($username: String!, $password: String!) {
   user {
-    add (username: $username, password: $password, roles: [ADMIN,USER])
+    add (username: $username, password: $password, roles: [USER])
   }
 }`
 
@@ -180,6 +180,19 @@ query ($ids: [String]) {
       _id
       localization
       schema
+    }
+  }
+}`
+
+export const GET_TEMPLATE_DATA = gql`
+query ($id: String!) {
+  template{
+    get (id: $id) {
+      keys {
+        _id
+        localization
+        schema
+      }
     }
   }
 }`

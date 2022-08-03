@@ -35,9 +35,9 @@ const ResponsiveAppBar = () => {
   const navigate = useNavigate()
   const client = useApolloClient()
   const [open, setOpen] = useState(false)
+  const loginData = useMemo(() => ({ username: '', password: '' }), [open])
   const { enqueueSnackbar } = useSnackbar()
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
-  const loginData = useMemo(() => ({ username: '', password: '' }), [open])
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement>()
   const [favorites, setFavorites] = useState<Record<string, FavoriteType>>({})
   const [selectedItems, setSelectedItems] = useState<string[]>([])
@@ -150,7 +150,7 @@ const ResponsiveAppBar = () => {
                   <Typography textAlign='center'>字段管理</Typography>
                 </MenuItem>
               )}
-              {isAdmin && (
+              {isLogin && (
                 <MenuItem
                   onClick={() => {
                     setAnchorElUser(null)

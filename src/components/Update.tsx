@@ -29,9 +29,12 @@ import fields, { defaultValues, typeNameMap } from './fields'
 import Field from './fields/Field'
 import { CircularLoading } from './Loading'
 import { TemplateData, FieldType, TemplateType } from '../types'
-import { GET_DATA, ADD_DATA, UPDATE_DATA, skipFieldsList, ADD_TEMPLATE, GET_KEYS_DATA, LIST_KEYS, LIST_TEMPLATES, GET_TEMPLATE } from '../api'
+import {
+  GET_DATA, ADD_DATA, UPDATE_DATA, skipFieldsList, ADD_TEMPLATE, GET_KEYS_DATA, LIST_KEYS,
+  LIST_TEMPLATES, GET_TEMPLATE, GET_TEMPLATE_DATA
+} from '../api'
 
-import { useQuery, useApolloClient, gql } from '@apollo/client'
+import { useQuery, useApolloClient } from '@apollo/client'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
 
@@ -60,9 +63,9 @@ const ItemCard: React.FC = () => {
   const pendingList = useRef<Record<string, AsyncFunction>>({})
   const onSubmit = useCallback((key: string, fn: AsyncFunction) => { pendingList.current[key] = fn }, [])
 
-  const { loading, error, data } = useQuery(id
-    ? GET_DATA
-    : gql`query { key { get(ids: ["title", "images", "description"]) { _id localization schema } } }`, { variables: { id } })
+  const { loading, error, data } = id
+    ? useQuery(GET_DATA, { variables: { id } })
+    : useQuery(GET_TEMPLATE_DATA, { variables: { id: '000000000000000000000' } })
 
   const [schema, others] = useMemo(() => {
     if (!data) return []
@@ -74,7 +77,7 @@ const ItemCard: React.FC = () => {
       ;[{ _id, ...others }] = rows.items
       schema = new Schema(rows.schema)
     } else {
-      const rows = data.key.get
+      const rows = data.template.get.keys
       schema = Schema.object(Object.fromEntries(rows.map((row: any) => [row._id, new Schema(JSON.parse(row.schema))])))
       others = { }
       ;(rows as FieldType[]).forEach(it => {
