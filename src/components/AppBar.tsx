@@ -40,7 +40,17 @@ const ResponsiveAppBar = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement>()
   const [favorites, setFavorites] = useState<Record<string, FavoriteType>>({})
-  const [selectedItems, setSelectedItems] = useState<string[]>([])
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({})
+
+  let selectedCount = 0
+  let selectedStr = ''
+  for (const key in selectedItems) {
+    if (selectedItems[key]) {
+      selectedCount++
+      selectedStr += '/'
+      selectedStr += key
+    }
+  }
 
   return (
     <AppBar position='fixed'>
@@ -203,11 +213,9 @@ const ResponsiveAppBar = () => {
                 secondaryAction={
                   <Checkbox
                     edge='start'
-                    checked={selectedItems[0] === id || selectedItems[1] === id}
+                    checked={!!selectedItems[id]}
                     tabIndex={-1}
-                    onChange={e => setSelectedItems(e.target.checked
-                      ? [selectedItems[1], id]
-                      : selectedItems[0] === id ? [selectedItems[1]] : [selectedItems[0]])}
+                    onChange={e => setSelectedItems({ ...selectedItems, [id]: e.target.checked })}
                   />
                 }
               >
@@ -223,8 +231,8 @@ const ResponsiveAppBar = () => {
         </List>
         <Box sx={{ textAlign: 'right' }}>
           <Button
-            disabled={!(selectedItems[0] && selectedItems[1])}
-            onClick={() => navigate(`/compare/${selectedItems[0]}/${selectedItems[1]}`)}
+            disabled={selectedCount < 2}
+            onClick={() => navigate('/compare' + selectedStr)}
           >
             对比
           </Button>

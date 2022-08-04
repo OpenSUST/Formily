@@ -77,7 +77,7 @@ function App () {
             <Route path='item/:id' element={<Item />} />
             <Route path='create' element={<Update />} />
             <Route path='update/:id' element={<Update />} />
-            <Route path='compare/:left/:right' element={<Compare />} />
+            <Route path='compare/*' element={<Compare />} />
             <Route path='template/:id' element={<Template />} />
             <Route path='templates' element={<Templates />} />
             <Route path='users' element={<Users />} />

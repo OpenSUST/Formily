@@ -155,14 +155,10 @@ query {
   }
 }`
 
-export const GET_TWO_ITEMS = gql`
-query ($left: String!, $right: String!) {
+export const GET_MULTI_ITEMS = gql`
+query ($ids: [String]) {
   item {
-    itemLeft: get (id: $left) {
-      items
-      schema
-    }
-    itemRight: get (id: $right) {
+    get (ids: $ids) {
       items
       schema
     }

@@ -36,7 +36,7 @@ const Home: React.FC = () => {
   const client = useApolloClient()
   const [keyword, setKeyword] = useState('')
   const [searchData, setSearchData] = useState<ItemType[]>()
-  const [selectedItems, setSelectedItems] = useState<string[]>([])
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({})
   // const [favorites, setFavorites] = useState<Record<string, FavoriteType>>(() => JSON.parse(localStorage.getItem('favorites') || '{}'))
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery(GET_ALL_COUNT)
@@ -50,6 +50,16 @@ const Home: React.FC = () => {
       console.error(e)
       enqueueSnackbar('搜索发生错误!', { variant: 'error' })
     })
+  }
+
+  let selectedCount = 0
+  let selectedStr = ''
+  for (const key in selectedItems) {
+    if (selectedItems[key]) {
+      selectedCount++
+      selectedStr += '/'
+      selectedStr += key
+    }
   }
 
   return (
@@ -140,11 +150,9 @@ const Home: React.FC = () => {
                           secondaryAction={
                             <Checkbox
                               edge='start'
-                              checked={selectedItems[0] === it._id || selectedItems[1] === it._id}
+                              checked={!!selectedItems[it._id]}
                               tabIndex={-1}
-                              onChange={e => setSelectedItems(e.target.checked
-                                ? [selectedItems[1], it._id]
-                                : selectedItems[0] === it._id ? [selectedItems[1]] : [selectedItems[0]])}
+                              onChange={e => setSelectedItems({ ...selectedItems, [it._id]: e.target.checked })}
                             />
                             // <IconButton
                             //   edge='end'
@@ -181,8 +189,8 @@ const Home: React.FC = () => {
                   </List>
                   <Box sx={{ textAlign: 'right' }}>
                     <Button
-                      disabled={!(selectedItems[0] && selectedItems[1])}
-                      onClick={() => navigate(`/compare/${selectedItems[0]}/${selectedItems[1]}`)}
+                      disabled={selectedCount < 2}
+                      onClick={() => navigate('/compare' + selectedStr)}
                     >
                       对比
                     </Button>
