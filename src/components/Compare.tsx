@@ -92,7 +92,7 @@ const Compare: React.FC = () => {
       </Grid> */}
       <Table sx={{ tableLayout: 'fixed', '& th': { width: 150 } }}>
         <TableBody>
-          <TableRow sx={{ fontWeight: 'bold' }}>
+          <TableRow sx={{ '& th, & td': { fontWeight: 'bold' } }}>
             <TableCell component='th' scope='row'>字段名</TableCell>
             {names}
           </TableRow>
