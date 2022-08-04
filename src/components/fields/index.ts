@@ -48,5 +48,5 @@ export const defaultSchemas: Record<Kind, Schema> = {
   multiCSV: createSchema('multiCSV', Schema.array(Schema.string())),
   file: createSchema('file', Schema.array(Schema.string())),
   liveOffice: createSchema('liveOffice'),
-  title: createSchema()
+  title: createSchema('title')
 }

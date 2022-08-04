@@ -45,10 +45,17 @@ const Item: React.FC = () => {
           <Table sx={{ tableLayout: 'fixed' }}>
             <TableBody>
               {Object.entries(others).sort((a, b) => compareTitle(a[0], b[0])).map(([key, value]) => {
-                const ViewComponent: Field<any>['ViewComponent'] = ((fields as any)[schema.dict[key]?.meta?.kind] || fields.text).ViewComponent
+                const kind: string = schema.dict[key]?.meta?.kind
+                const ViewComponent: Field<any>['ViewComponent'] = ((fields as any)[kind] || fields.text).ViewComponent
                 return (
-                  <TableRow key={key} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 100 }, '& td': { pl: 0, textAlign: 'justify' }, '& th, & td': { verticalAlign: 'top' } }}>
-                    <TableCell component='th' scope='row'>{defaultFieldsName[key] || key}</TableCell>
+                  <TableRow key={key} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 150 }, '& td': { pl: 0, textAlign: 'justify' }, '& th, & td': { verticalAlign: 'top' } }}>
+                    <TableCell
+                      component='th'
+                      scope='row'
+                      sx={{ fontWeight: kind === 'title' ? 'bold' : undefined }}
+                    >
+                      {defaultFieldsName[key] || key}
+                    </TableCell>
                     <TableCell><ViewComponent value={value as any} keyName={key} key={key} /></TableCell>
                   </TableRow>
                 )

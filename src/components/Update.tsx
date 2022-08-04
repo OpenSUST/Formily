@@ -132,9 +132,10 @@ const ItemCard: React.FC = () => {
     <Container sx={{ mt: 4 }} maxWidth='xl'>
       <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>{(newData as any).title || ''}</Typography>
       <Table sx={{ tableLayout: 'fixed' }}>
-        <TableBody sx={{ '& .key': { width: 100 }, '& .delete': { width: 26, pl: 1 }, '& td': { pl: 0, textAlign: 'justify' } }}>
+        <TableBody sx={{ '& .key': { width: 150 }, '& .delete': { width: 26, pl: 1 }, '& td': { pl: 0, textAlign: 'justify' } }}>
           {Object.entries(newData).sort((a, b) => compareTitle(a[0], b[0])).map(([key, value]) => {
-            const EditorComponent = ((fields as any)[(schema as any).dict[key]?.meta?.kind as any] || fields.text).EditorComponent as Field<any>['EditorComponent']
+            const kind: string = (schema as any).dict[key]?.meta?.kind
+            const EditorComponent = ((fields as any)[kind] || fields.text).EditorComponent as Field<any>['EditorComponent']
             return (
               <TableRow key={key}>
                 <TableCell component='th' scope='row' className='delete'>
@@ -153,12 +154,19 @@ const ItemCard: React.FC = () => {
                     </IconButton>
                   )}
                 </TableCell>
-                <TableCell component='th' scope='row' className='key'>{defaultFieldsName[key] || key}</TableCell>
+                <TableCell
+                  component='th'
+                  scope='row'
+                  className='key'
+                  sx={{ fontWeight: kind === 'title' ? 'bold' : undefined }}
+                >
+                  {defaultFieldsName[key] || key}
+                </TableCell>
                 <TableCell>
                   <EditorComponent
                     key={key}
                     value={value}
-                    name={key}
+                    name={defaultFieldsName[key] || key}
                     keyName={key}
                     data={formData.current}
                     onSubmit={onSubmit}

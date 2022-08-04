@@ -6,7 +6,7 @@ export const compareTitle = (a: string, b: string) => {
     // @ts-ignore
     const val = it - brr[i++]
     if (val) return val
-    else if (isNaN(+it)) return -1
+    else if (isNaN(+it)) return 1
   }
   return arr.length - brr.length
 }

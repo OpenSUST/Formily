@@ -44,10 +44,17 @@ const Compare: React.FC = () => {
   const rightHas: JSX.Element[] = []
 
   for (const key in othersLeft) {
-    const ViewComponent = ((fields as any)[schemas[0].dict[key]?.meta?.kind] || fields.text).ViewComponent
+    const kind: string = schemas[0].dict[key]?.meta?.kind
+    const ViewComponent = ((fields as any)[kind] || fields.text).ViewComponent
       ; (key in othersRight ? arr : leftHas).push(
         <TableRow key={key} sx={styles}>
-          <TableCell component='th' scope='row'>{keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || defaultFieldsName[key] || key}</TableCell>
+          <TableCell
+            component='th'
+            scope='row'
+            sx={{ fontWeight: kind === 'title' ? 'bold' : undefined }}
+          >
+            {keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || defaultFieldsName[key] || key}
+          </TableCell>
           <TableCell><ViewComponent value={othersLeft[key]} /></TableCell>
           <TableCell>{key in othersRight && <ViewComponent value={othersRight[key]} />}</TableCell>
         </TableRow>
@@ -55,10 +62,17 @@ const Compare: React.FC = () => {
   }
   for (const key in othersRight) {
     if (key in othersLeft) continue
-    const ViewComponent = ((fields as any)[schemas[1].dict[key]?.meta?.kind] || fields.text).ViewComponent
+    const kind: string = schemas[1].dict[key]?.meta?.kind
+    const ViewComponent = ((fields as any)[kind] || fields.text).ViewComponent
     rightHas.push((
       <TableRow key={key} sx={styles}>
-        <TableCell component='th' scope='row'>{keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || defaultFieldsName[key] || key}</TableCell>
+        <TableCell
+          component='th'
+          scope='row'
+          sx={{ fontWeight: kind === 'title' ? 'bold' : undefined }}
+        >
+          {keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || defaultFieldsName[key] || key}
+        </TableCell>
         <TableCell />
         <TableCell><ViewComponent value={othersRight[key]} /></TableCell>
       </TableRow>
@@ -78,7 +92,7 @@ const Compare: React.FC = () => {
           <ItemCard title={titleRight} description={descriptionRight} image={othersRight.images[0]} id={right!} />
         </Grid>
         <Grid item sx={{ flex: '1', width: 0 }}>
-          <Table sx={{ tableLayout: 'fixed', '& th': { width: 100 } }}>
+          <Table sx={{ tableLayout: 'fixed', '& th': { width: 150 } }}>
             <TableBody>
               <TableRow>
                 <TableCell component='th' scope='row'>字段名</TableCell>
