@@ -69,7 +69,10 @@ const Templates: React.FC = () => {
         aria-label='add'
         sx={{ position: 'fixed', bottom: 36, right: 36 }}
         onClick={() => client.mutate({ mutation: ADD_TEMPLATE, variables: { name: '新建模板 ' + new Date().toDateString() } })
-          .then(({ errors }) => { if (errors) throw errors }).catch(console.error)}
+          .then(({ errors, data }) => {
+            if (errors?.[0]) throw errors[0]
+            navigate('/template/' + data.template.add)
+          }).catch(console.error)}
       >
         <AddIcon />
       </Fab>

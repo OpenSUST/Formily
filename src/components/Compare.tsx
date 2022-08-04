@@ -9,8 +9,9 @@ import TableRow from '@mui/material/TableRow'
 import Container from '@mui/material/Container'
 import ItemCard from './ItemCard'
 import fields from './fields'
+import { compareTitle } from '../utils'
 import { CircularLoading } from './Loading'
-import { GET_TWO_ITEMS } from '../api'
+import { GET_TWO_ITEMS, defaultFieldsName } from '../api'
 
 import { useQuery } from '@apollo/client'
 import { useParams } from 'react-router-dom'
@@ -38,15 +39,7 @@ const Compare: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [{ title: titleRight, description: descriptionRight, _id: idRight, ...othersRight }] = itemsRight
 
-  const arr: JSX.Element[] = [
-    (
-      <TableRow key={999999999}>
-        <TableCell component='th' scope='row'>字段名</TableCell>
-        <TableCell>{titleLeft}</TableCell>
-        <TableCell>{titleRight}</TableCell>
-      </TableRow>
-    )
-  ]
+  const arr: JSX.Element[] = []
   const leftHas: JSX.Element[] = []
   const rightHas: JSX.Element[] = []
 
@@ -54,7 +47,7 @@ const Compare: React.FC = () => {
     const ViewComponent = ((fields as any)[schemas[0].dict[key]?.meta?.kind] || fields.text).ViewComponent
       ; (key in othersRight ? arr : leftHas).push(
         <TableRow key={key} sx={styles}>
-          <TableCell component='th' scope='row'>{keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || key}</TableCell>
+          <TableCell component='th' scope='row'>{keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || defaultFieldsName[key] || key}</TableCell>
           <TableCell><ViewComponent value={othersLeft[key]} /></TableCell>
           <TableCell>{key in othersRight && <ViewComponent value={othersRight[key]} />}</TableCell>
         </TableRow>
@@ -65,12 +58,16 @@ const Compare: React.FC = () => {
     const ViewComponent = ((fields as any)[schemas[1].dict[key]?.meta?.kind] || fields.text).ViewComponent
     rightHas.push((
       <TableRow key={key} sx={styles}>
-        <TableCell component='th' scope='row'>{keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || key}</TableCell>
+        <TableCell component='th' scope='row'>{keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || defaultFieldsName[key] || key}</TableCell>
         <TableCell />
         <TableCell><ViewComponent value={othersRight[key]} /></TableCell>
       </TableRow>
     ))
   }
+
+  arr.sort((a, b) => compareTitle(a.key as string, b.key as string))
+  leftHas.sort((a, b) => compareTitle(a.key as string, b.key as string))
+  rightHas.sort((a, b) => compareTitle(a.key as string, b.key as string))
 
   return (
     <Container sx={{ mt: 4 }} maxWidth='xl'>
@@ -82,7 +79,14 @@ const Compare: React.FC = () => {
         </Grid>
         <Grid item sx={{ flex: '1', width: 0 }}>
           <Table sx={{ tableLayout: 'fixed', '& th': { width: 100 } }}>
-            <TableBody>{arr}{leftHas}{rightHas}</TableBody>
+            <TableBody>
+              <TableRow>
+                <TableCell component='th' scope='row'>字段名</TableCell>
+                <TableCell>{titleLeft}</TableCell>
+                <TableCell>{titleRight}</TableCell>
+              </TableRow>
+              {arr}{leftHas}{rightHas}
+            </TableBody>
           </Table>
         </Grid>
       </Grid>

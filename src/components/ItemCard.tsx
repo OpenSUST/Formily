@@ -11,7 +11,7 @@ import MenuItem from '@mui/material/MenuItem'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { openDialog } from './EnsureDialog'
 import { FavoriteType } from '../types'
-import { isAdmin } from '../api'
+import { isLogin } from '../api'
 import { useNavigate } from 'react-router-dom'
 import { gql, useApolloClient } from '@apollo/client'
 import { useSnackbar } from 'notistack'
@@ -56,7 +56,7 @@ const ItemCard: React.FC<{ image: string, title: string, description: string, id
         open={!!anchorEl}
         onClose={() => setAnchorEl(undefined)}
       >
-        {isAdmin && (
+        {isLogin && (
           <MenuItem
             onClick={() => {
               setAnchorEl(undefined)
@@ -77,7 +77,7 @@ const ItemCard: React.FC<{ image: string, title: string, description: string, id
         >
           {isFavorite ? '取消收藏' : '收藏'}
         </MenuItem>
-        {isAdmin && (
+        {isLogin && (
           <MenuItem
             onClick={async () => {
               setAnchorEl(undefined)

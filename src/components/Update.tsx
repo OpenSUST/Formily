@@ -27,11 +27,12 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import fields, { defaultValues, typeNameMap } from './fields'
 import Field from './fields/Field'
+import { compareTitle } from '../utils'
 import { CircularLoading } from './Loading'
 import { TemplateData, FieldType, TemplateType } from '../types'
 import {
   GET_DATA, ADD_DATA, UPDATE_DATA, skipFieldsList, ADD_TEMPLATE, GET_KEYS_DATA, LIST_KEYS,
-  LIST_TEMPLATES, GET_TEMPLATE, GET_TEMPLATE_DATA
+  LIST_TEMPLATES, GET_TEMPLATE, GET_TEMPLATE_DATA, defaultFieldsName
 } from '../api'
 
 import { useQuery, useApolloClient } from '@apollo/client'
@@ -132,7 +133,7 @@ const ItemCard: React.FC = () => {
       <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>{(newData as any).title || ''}</Typography>
       <Table sx={{ tableLayout: 'fixed' }}>
         <TableBody sx={{ '& .key': { width: 100 }, '& .delete': { width: 26, pl: 1 }, '& td': { pl: 0, textAlign: 'justify' } }}>
-          {Object.entries(newData).map(([key, value]) => {
+          {Object.entries(newData).sort((a, b) => compareTitle(a[0], b[0])).map(([key, value]) => {
             const EditorComponent = ((fields as any)[(schema as any).dict[key]?.meta?.kind as any] || fields.text).EditorComponent as Field<any>['EditorComponent']
             return (
               <TableRow key={key}>
@@ -152,7 +153,7 @@ const ItemCard: React.FC = () => {
                     </IconButton>
                   )}
                 </TableCell>
-                <TableCell component='th' scope='row' className='key'>{key}</TableCell>
+                <TableCell component='th' scope='row' className='key'>{defaultFieldsName[key] || key}</TableCell>
                 <TableCell>
                   <EditorComponent
                     key={key}

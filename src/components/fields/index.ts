@@ -6,9 +6,10 @@ import liveOffice from './LiveOffice'
 import csv from './CSV'
 import multiCSV from './MultiCSV'
 import file from './File'
+import title from './Title'
 import { Kind } from '../../types'
 
-export default { text, number, image, liveOffice, csv, multiCSV, file }
+export default { text, number, image, liveOffice, csv, multiCSV, file, title }
 export const typeNameMap: Record<Kind, string> = {
   '': '文本',
   text: '文本',
@@ -17,7 +18,8 @@ export const typeNameMap: Record<Kind, string> = {
   csv: '表格',
   multiCSV: '多表格',
   file: '文件',
-  liveOffice: '文档'
+  liveOffice: '文档',
+  title: '标题'
 }
 export const defaultValues: Record<Kind, () => any> = {
   '': () => '',
@@ -27,7 +29,8 @@ export const defaultValues: Record<Kind, () => any> = {
   csv: () => '',
   file: () => [],
   multiCSV: () => [],
-  liveOffice: () => ''
+  liveOffice: () => '',
+  title: () => ''
 }
 
 const createSchema = (type?: string, schema: Schema = Schema.string()) => {
@@ -44,5 +47,6 @@ export const defaultSchemas: Record<Kind, Schema> = {
   csv: createSchema('csv'),
   multiCSV: createSchema('multiCSV', Schema.array(Schema.string())),
   file: createSchema('file', Schema.array(Schema.string())),
-  liveOffice: createSchema('liveOffice')
+  liveOffice: createSchema('liveOffice'),
+  title: createSchema()
 }

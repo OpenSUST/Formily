@@ -12,7 +12,8 @@ import ItemCard from './ItemCard'
 import fields from './fields'
 import Field from './fields/Field'
 import { CircularLoading } from './Loading'
-import { GET_DATA } from '../api'
+import { GET_DATA, defaultFieldsName } from '../api'
+import { compareTitle } from '../utils'
 
 import { useQuery } from '@apollo/client'
 import { useParams } from 'react-router-dom'
@@ -37,17 +38,17 @@ const Item: React.FC = () => {
       <Grid container spacing={4} sx={{ flexDirection: { md: 'row-reverse' } }}>
         <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, padding: '0!important' }} />
         <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, position: { md: 'fixed' }, width: '100%' }}>
-          <ItemCard title={title} description={description} image={others.images[0]} id={id!} />
+          <ItemCard title={title} description={description} image={others.images?.[0]} id={id!} />
         </Grid>
         <Grid item sx={{ flex: '1', width: 0 }}>
           <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>{title}</Typography>
           <Table sx={{ tableLayout: 'fixed' }}>
             <TableBody>
-              {Object.entries(others).map(([key, value]) => {
+              {Object.entries(others).sort((a, b) => compareTitle(a[0], b[0])).map(([key, value]) => {
                 const ViewComponent: Field<any>['ViewComponent'] = ((fields as any)[schema.dict[key]?.meta?.kind] || fields.text).ViewComponent
                 return (
                   <TableRow key={key} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 100 }, '& td': { pl: 0, textAlign: 'justify' }, '& th, & td': { verticalAlign: 'top' } }}>
-                    <TableCell component='th' scope='row'>{key}</TableCell>
+                    <TableCell component='th' scope='row'>{defaultFieldsName[key] || key}</TableCell>
                     <TableCell><ViewComponent value={value as any} keyName={key} key={key} /></TableCell>
                   </TableRow>
                 )

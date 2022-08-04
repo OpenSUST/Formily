@@ -102,7 +102,7 @@ const ResponsiveAppBar = () => {
                 }}
                 sx={{ p: 0 }}
               >
-                <Avatar alt={username}>{isLogin ? username : undefined}</Avatar>
+                <Avatar alt={username}>{isLogin ? username[0] : undefined}</Avatar>
               </IconButton>
             </Tooltip>
             <Menu
@@ -174,6 +174,8 @@ const ResponsiveAppBar = () => {
               >
                 <Typography textAlign='center'>退出登录</Typography>
               </MenuItem>
+              <Divider />
+              <MenuItem disabled>您好, {username}</MenuItem>
             </Menu>
           </Box>
         </Toolbar>

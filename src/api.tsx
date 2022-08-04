@@ -12,6 +12,13 @@ export const skipFieldsList: Record<string, true | undefined> = {
   title: true
 }
 
+export const defaultFieldsName: Record<string, string> = {
+  _id: 'ID',
+  description: '描述',
+  images: '图片',
+  title: '标题'
+}
+
 export const GET_DATA = gql`
 query Request ($id: String!) {
   item {
