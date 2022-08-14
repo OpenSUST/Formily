@@ -92,6 +92,7 @@ const Home: React.FC = () => {
             left: 0,
             right: 0,
             zIndex: 1,
+            padding: '0 20px',
             pb: searchData ? 2 : 0,
             backdropFilter: searchData ? 'blur(6px)' : undefined
           }}

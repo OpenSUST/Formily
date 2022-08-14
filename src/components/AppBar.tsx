@@ -65,7 +65,7 @@ const ResponsiveAppBar = () => {
               mr: 2,
               display: { xs: 'none', md: 'flex' },
               fontWeight: 700,
-              letterSpacing: '.3rem',
+              letterSpacing: { md: '.3rem' },
               color: 'inherit',
               textDecoration: 'none'
             }}
@@ -82,7 +82,7 @@ const ResponsiveAppBar = () => {
               display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
               fontWeight: 700,
-              letterSpacing: '.3rem',
+              letterSpacing: { md: '.3rem' },
               color: 'inherit',
               textDecoration: 'none'
             }}
@@ -90,7 +90,7 @@ const ResponsiveAppBar = () => {
             {name}
           </Typography>
 
-          <Box sx={{ flexGrow: 0, ml: 'auto' }}>
+          <Box sx={{ flexGrow: 0, ml: 'auto', display: 'flex' }}>
             <Tooltip title='显示我的收藏'>
               <IconButton
                 size='large'

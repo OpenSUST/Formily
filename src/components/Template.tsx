@@ -18,7 +18,6 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Container from '@mui/material/Container'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
@@ -42,7 +41,7 @@ const Template: React.FC = () => {
   const client = useApolloClient()
   const [addFieldOpen, setAddFieldOpen] = useState(false)
   const [editNameOpen, setEditNameOpen] = useState(false)
-  const [templateData, setTemplateData] = useState<(TemplateData)[]>([])
+  const [templateData, setTemplateData] = useState<TemplateData[]>([])
   const [fieldsData, setFieldsData] = useState<FieldType[]>([])
   const [options, setOptions] = useState<readonly FieldType[]>([])
   const [templateName, setTemplateName] = useState('')
@@ -59,10 +58,13 @@ const Template: React.FC = () => {
     client.query({ query: GET_KEYS_DATA, variables: { ids: payload.map(it => it.key) } })
       .then(({ error, data }) => {
         if (error) throw error
+        const fields: FieldType[] = []
         setTemplateData((data.key.get as any[]).map(it => {
-          schemas.current[it._id] = new Schema(it.schema)
+          const schema = schemas.current[it._id] = new Schema(JSON.parse(it.schema))
+          fields.push({ ...it, schema })
           return { key: it._id }
         }))
+        setFieldsData(fields)
       })
       .catch(e => {
         console.error(e)
@@ -114,7 +116,6 @@ const Template: React.FC = () => {
       >
         <DialogTitle>添加新字段</DialogTitle>
         <DialogContent>
-          <DialogContentText>请选择需要添加的字段</DialogContentText>
           <Autocomplete
             multiple
             isOptionEqualToValue={(a: any, b: any) => a._id === b._id}

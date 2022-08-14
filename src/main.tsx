@@ -34,7 +34,12 @@ const theme = createTheme(
   zhCN
 )
 
-const httpLink = createHttpLink({ uri: process.env.NODE_ENV === 'development' ? location.protocol === 'https:' ? 'https://kr.hydro.ac/opensust/api' : 'http://106.52.43.12:9977/' : '/api' })
+const httpLink = createHttpLink({
+  // @ts-ignore
+  uri: process.env.NODE_ENV === 'development'
+    ? location.protocol === 'https:' ? 'https://kr.hydro.ac/opensust/api' : 'http://8.130.110.136/api'
+    : '/api'
+})
 const authLink = setContext((_, { headers }) => ({
   headers: {
     ...headers,
