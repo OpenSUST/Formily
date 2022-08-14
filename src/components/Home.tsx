@@ -99,7 +99,7 @@ const Home: React.FC = () => {
         >
           {searchData
             ? <Toolbar />
-            : <Typography variant='h2' sx={{ mt: '-18vh', mb: 3, color: '#fff', fontWeight: 'bold', WebkitTextStroke: '1px #000' }}>{name}</Typography>}
+            : <Typography variant='h2' sx={{ mt: '-18vh', mb: 3, color: '#fff', fontWeight: 'bold', WebkitTextStroke: '1px #000', textAlign: 'center' }}>{name}</Typography>}
           <Autocomplete
             freeSolo
             disableClearable
