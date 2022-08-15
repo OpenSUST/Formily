@@ -29,7 +29,7 @@ const Item: React.FC = () => {
 
   const { items } = data.item.get
 
-  if (!items.length) throw new Error('Empty')
+  if (!items.length) throw new Error('找不到当前的物品')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [{ title, description, _id, ...others }] = items
 

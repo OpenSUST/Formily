@@ -21,7 +21,7 @@ function dataURItoBlob (dataURI: string) {
 const components: Field<string[]> = {
   ViewComponent ({ value }) {
     return (
-      <Box sx={{ whiteSpace: 'nowrap', overflowX: 'auto', '& div': { mr: 1 } }}>
+      <Box sx={{ whiteSpace: 'nowrap', overflowX: 'auto', '& div': { mr: 1, display: 'inline-block' } }}>
         {value.map((url, i) => (<Zoom key={i}><img src={url} height={140} /></Zoom>))}
       </Box>
     )
