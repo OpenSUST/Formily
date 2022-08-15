@@ -89,6 +89,7 @@ const ItemCard: React.FC<{ image: string, title: string, description: string, id
               }).then(res => {
                 if (res.errors) throw res.errors[0]
                 enqueueSnackbar('删除成功', { variant: 'success' })
+                navigate('/')
               }).catch(e => {
                 enqueueSnackbar(e.message, { variant: 'error' })
               })
