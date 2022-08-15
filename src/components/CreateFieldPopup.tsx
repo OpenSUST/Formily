@@ -13,7 +13,7 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import { useApolloClient, gql } from '@apollo/client'
 import { useSnackbar } from 'notistack'
-import { typeNameMap, defaultSchemas } from './fields'
+import fields from './fields'
 import { Kind } from '../types'
 
 export default React.forwardRef(function CreateFieldPopup (_, ref) {
@@ -48,7 +48,7 @@ export default React.forwardRef(function CreateFieldPopup (_, ref) {
             defaultValue='text'
             onChange={e => setType(e.target.value)}
           >
-            {Object.entries(typeNameMap).filter(([key]) => !!key).map(([key, value]) => <MenuItem value={key} key={key}>{value}</MenuItem>)}
+            {Object.entries(fields).map(([key, value]) => <MenuItem value={key} key={key}>{value.name}</MenuItem>)}
           </Select>
         </FormControl>
       </DialogContent>
@@ -65,7 +65,7 @@ export default React.forwardRef(function CreateFieldPopup (_, ref) {
                   }
                 }
               `,
-              variables: { key: key.replace(/\./g, '_'), schema: JSON.stringify(defaultSchemas[keyType as Kind].toJSON()) }
+              variables: { key: key.replace(/\./g, '_'), schema: JSON.stringify(fields[keyType as Kind].schema.toJSON()) }
             }).then(it => {
               if (it.errors) throw it.errors
               enqueueSnackbar('添加字段成功!', { variant: 'success' })

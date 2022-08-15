@@ -21,8 +21,8 @@ import IconButton from '@mui/material/IconButton'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import fields from './fields'
 import { skipFieldsList } from '../api'
-import { typeNameMap } from './fields'
 import { openDialog } from './EnsureDialog'
 import { CircularLoading } from './Loading'
 
@@ -34,8 +34,8 @@ import { normalizeTitle } from '../utils'
 
 const getTypeName = (type: string) => {
   const schema = new Schema(JSON.parse(type))
-  if (schema.type === 'number') return typeNameMap.number
-  return (typeNameMap as any)[schema.meta!.kind!] as string
+  if (schema.type === 'number') return fields.number.name
+  return fields[schema.meta!.kind! || 'text'].name as string
 }
 
 const Schemas: React.FC = () => {

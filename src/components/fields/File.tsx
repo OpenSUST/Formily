@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from 'react'
-import Field from './Field'
+import Field, { createSchema } from './Field'
+import Schema from 'schemastery'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import Box from '@mui/material/Box'
@@ -20,6 +21,10 @@ function dataURItoBlob (dataURI: string) {
 }
 
 const components: Field<string[]> = {
+  name: '文件',
+  schema: createSchema('file', Schema.array(Schema.string())),
+  getDefaultValue () { return [] },
+  isEmpty (value) { return !value.length },
   ViewComponent ({ value }) {
     return (
       <Box sx={{ whiteSpace: 'nowrap', overflowX: 'auto' }}>

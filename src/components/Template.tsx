@@ -25,7 +25,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import SaveIcon from '@mui/icons-material/Save'
 import EditIcon from '@mui/icons-material/Edit'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
-import { typeNameMap } from './fields'
+import fields from './fields'
 import { CircularLoading } from './Loading'
 import { GET_KEYS_DATA, LIST_KEYS, GET_TEMPLATE, UPDATE_TEMPLATE, skipFieldsList } from '../api'
 import { TemplateData, FieldType } from '../types'
@@ -93,7 +93,7 @@ const Template: React.FC = () => {
               }
             >
               <ListItemText
-                primary={<>{it.key} <Chip label={(typeNameMap as any)[schemas.current[it.key].meta?.kind || 'text']} size='small' /></>}
+                primary={<>{it.key} <Chip label={fields[schemas.current[it.key].meta?.kind || 'text'].name} size='small' /></>}
               />
             </ListItem>
           ))}
@@ -135,7 +135,7 @@ const Template: React.FC = () => {
                   checked={selected}
                 />
                 {normalizeTitle(option.localization?.['zh-CN'] || option._id)}
-                &nbsp;<Chip label={(typeNameMap as any)[option.schema.meta?.kind || 'text']} size='small' />
+                &nbsp;<Chip label={fields[option.schema.meta?.kind || 'text'].name} size='small' />
               </li>
             )}
             value={fieldsData}

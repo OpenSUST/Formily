@@ -1,10 +1,15 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
-import Field from './Field'
+import Schema from 'schemastery'
+import Field, { createSchema } from './Field'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 
-const components: Field<string> = {
+const components: Field<number> = {
+  name: '数字',
+  schema: createSchema('number', Schema.number()),
+  getDefaultValue () { return 0 },
+  isEmpty (value) { return !value },
   ViewComponent ({ value }) {
     return (
       <Typography>{value}</Typography>

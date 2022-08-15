@@ -1,13 +1,17 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useMemo, useRef } from 'react'
 import Button from '@mui/material/Button'
-import Field from './Field'
+import Field, { createSchema } from './Field'
 import { HotTable } from '@handsontable/react'
 import { registerAllModules } from 'handsontable/registry'
 
 registerAllModules()
 
 const components: Field<string> = {
+  name: '表格',
+  schema: createSchema('csv'),
+  getDefaultValue () { return '' },
+  isEmpty (value) { return !value.length },
   ViewComponent ({ value, keyName }) {
     const hotTableComponent = useRef<HotTable>(null)
     return (
@@ -27,7 +31,7 @@ const components: Field<string> = {
         >
           导出文件
         </Button>
-        <div style={{ height: 400, width: '100%', marginTop: 8 }}>
+        <div style={{ maxHeight: 400, width: '100%', marginTop: 8 }}>
           <HotTable
             colHeaders
             rowHeaders

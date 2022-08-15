@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState } from 'react'
-import Field from './Field'
+import Field, { createSchema } from './Field'
+import Schema from 'schemastery'
 import Zoom from 'react-medium-image-zoom'
 import ClearIcon from '@mui/icons-material/Clear'
 import Box from '@mui/material/Box'
@@ -19,6 +20,10 @@ function dataURItoBlob (dataURI: string) {
 }
 
 const components: Field<string[]> = {
+  name: '图片',
+  schema: createSchema('image', Schema.array(Schema.string())),
+  getDefaultValue () { return [] },
+  isEmpty (value) { return !value.length },
   ViewComponent ({ value }) {
     return (
       <Box sx={{ whiteSpace: 'nowrap', overflowX: 'auto', '& div': { mr: 1, display: 'inline-block' } }}>

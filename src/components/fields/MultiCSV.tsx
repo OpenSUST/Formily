@@ -1,14 +1,19 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState, useRef } from 'react'
+import Schema from 'schemastery'
 import Button from '@mui/material/Button'
 import Pagination from '@mui/material/Pagination'
-import Field from './Field'
+import Field, { createSchema } from './Field'
 import { HotTable } from '@handsontable/react'
 import { registerAllModules } from 'handsontable/registry'
 
 registerAllModules()
 
 const components: Field<string[]> = {
+  name: '多表格',
+  schema: createSchema('multiCSV', Schema.array(Schema.string())),
+  getDefaultValue () { return [] },
+  isEmpty (value) { return !value.length },
   ViewComponent ({ value, keyName }) {
     if (!value.length) value.push('')
     const [index, setIndex] = useState(0)
@@ -33,7 +38,7 @@ const components: Field<string[]> = {
         >
           导出文件
         </Button>
-        <div style={{ height: 400, width: '100%', marginTop: 8 }}>
+        <div style={{ maxHeight: 400, width: '100%', marginTop: 8 }}>
           <HotTable
             colHeaders
             rowHeaders

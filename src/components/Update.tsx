@@ -25,7 +25,7 @@ import SaveIcon from '@mui/icons-material/Save'
 import DeleteIcon from '@mui/icons-material/Delete'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import fields, { defaultValues, typeNameMap } from './fields'
+import fields from './fields'
 import Field from './fields/Field'
 import { compareTitle, normalizeTitle } from '../utils'
 import { CircularLoading } from './Loading'
@@ -85,7 +85,7 @@ const ItemCard: React.FC = () => {
       others = { }
       ;(rows as FieldType[]).forEach(it => {
         if (it._id === '_id') return
-        others[it._id] = (defaultValues as any)[(schema as any).dict[it._id]?.meta?.kind || 'text']()
+        others[it._id] = fields[(schema as any).dict[it._id]?.meta?.kind || 'text'].getDefaultValue()
         localization[it._id] = it.localization
       })
       Object.assign(formData.current, others)
@@ -124,7 +124,7 @@ const ItemCard: React.FC = () => {
     const arr = data.key.get.filter((it: any) => !skipFieldsList[it._id])
     arr.forEach((it: any) => {
       const cur = (schema as any).dict[it._id] = new Schema(JSON.parse(it.schema))
-      obj[it._id] = formData.current[it._id] = templateDataObj[it._id] ?? (defaultValues as any)[cur.meta?.kind || 'text']()
+      obj[it._id] = formData.current[it._id] = templateDataObj[it._id] ?? fields[cur.meta?.kind || 'text'].getDefaultValue()
     })
     setNewData(obj)
   }
@@ -136,7 +136,7 @@ const ItemCard: React.FC = () => {
         <TableBody sx={{ '& .key': { width: 150 }, '& .delete': { width: 26, pl: 1 }, '& td': { pl: 0, textAlign: 'justify' } }}>
           {Object.entries(newData).sort((a, b) => compareTitle(a[0], b[0])).map(([key, value]) => {
             const kind: string = (schema as any).dict[key]?.meta?.kind
-            const EditorComponent = ((fields as any)[kind] || fields.text).EditorComponent as Field<any>['EditorComponent']
+            const EditorComponent = (fields[kind] || fields.text).EditorComponent as Field<any>['EditorComponent']
             const title = normalizeTitle(defaultFieldsName[key] || key)
             return (
               <TableRow key={key}>
@@ -259,7 +259,7 @@ const ItemCard: React.FC = () => {
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {normalizeTitle(option.localization?.['zh-CN'] || option._id)}&nbsp;<Chip label={(typeNameMap as any)[option.schema.meta?.kind || 'text']} size='small' />
+                {normalizeTitle(option.localization?.['zh-CN'] || option._id)}&nbsp;<Chip label={fields[option.schema.meta?.kind || 'text'].name} size='small' />
               </li>
             )}
             value={fieldsData}
@@ -289,7 +289,7 @@ const ItemCard: React.FC = () => {
               const obj: any = { title: newData.title, description: newData.description, images: newData.images }
               fieldsData.forEach(it => {
                 const cur = (schema as any).dict[it._id] = it.schema
-                obj[it._id] = (defaultValues as any)[cur.meta?.kind || 'text']()
+                obj[it._id] = fields[cur.meta?.kind || 'text'].getDefaultValue()
                 if (!(it._id in newData)) formData.current[it._id] = obj[it._id]
               })
               for (const key in formData.current) {

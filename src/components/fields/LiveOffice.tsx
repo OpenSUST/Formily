@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useRef, useEffect, useState } from 'react'
-import Field from './Field'
+import Field, { createSchema } from './Field'
 // @ts-ignore
 import Preview from 'preview-office-docs'
 import Box from '@mui/material/Box'
@@ -9,6 +9,10 @@ import { UPLOAD } from '../../api'
 import { useApolloClient } from '@apollo/client'
 
 const components: Field<string> = {
+  name: '文档',
+  schema: createSchema('liveOffice'),
+  getDefaultValue () { return '' },
+  isEmpty (value) { return !value.length },
   ViewComponent ({ value }) {
     return value
       ? (

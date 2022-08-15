@@ -31,7 +31,7 @@ export interface TemplateData {
   default?: any
 }
 
-export type Kind = 'file' | 'image' | 'csv' | 'multiCSV' | 'liveOffice' | 'number' | 'text' | 'title' | ''
+export type Kind = 'file' | 'image' | 'csv' | 'multiCSV' | 'liveOffice' | 'number' | 'text' | 'title'
 
 declare module 'schemastery' {
   interface Meta {
