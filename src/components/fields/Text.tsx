@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField'
 const components: Field<string> = {
   ViewComponent ({ value }) {
     return (
-      <Typography>{value}</Typography>
+      <Typography>{typeof value === 'string' ? value : typeof value === 'object' ? JSON.stringify(value) : Object.prototype.toString.call(value)}</Typography>
     )
   },
   EditorComponent ({ name, value, keyName, data }) {

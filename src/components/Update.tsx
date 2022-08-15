@@ -51,7 +51,7 @@ const ItemCard: React.FC = () => {
   const { id } = useParams<{ id?: string }>()
   const [submitting, setSubmitting] = useState(false)
   const [addFieldOpen, setAddFieldOpen] = useState(false)
-  const [importTempateOpen, setImportTempateOpen] = useState(false)
+  const [importTemplateOpen, setImportTemplateOpen] = useState(false)
   const [saveTemplateName, setSaveTemplateName] = useState('')
   const [saveTemplateOpen, setSaveTemplateOpen] = useState(false)
   const [options, setOptions] = useState<readonly FieldType[]>([])
@@ -122,7 +122,7 @@ const ItemCard: React.FC = () => {
     const obj: any = { ...newData }
     const arr = data.key.get.filter((it: any) => !skipFieldsList[it._id])
     arr.forEach((it: any) => {
-      const cur = (schema as any)[it._id] = new Schema(it.schema)
+      const cur = (schema as any).dict[it._id] = new Schema(JSON.parse(it.schema))
       obj[it._id] = templateDataObj[it._id] ?? (defaultValues as any)[cur.meta?.kind || 'text']()
     })
     setNewData(obj)
@@ -192,7 +192,7 @@ const ItemCard: React.FC = () => {
           onClick={async () => {
             const res = await client.query({ query: LIST_TEMPLATES })
             setTemplates(res.data.template.search)
-            setImportTempateOpen(true)
+            setImportTemplateOpen(true)
           }}
         >
           导入模板
@@ -310,8 +310,8 @@ const ItemCard: React.FC = () => {
         </DialogActions>
       </Dialog>
       <Dialog
-        open={importTempateOpen}
-        onClose={() => setImportTempateOpen(false)}
+        open={importTemplateOpen}
+        onClose={() => setImportTemplateOpen(false)}
       >
         <DialogTitle>导入模板</DialogTitle>
         <DialogContent>
@@ -341,10 +341,10 @@ const ItemCard: React.FC = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setImportTempateOpen(false)}>取消</Button>
+          <Button onClick={() => setImportTemplateOpen(false)}>取消</Button>
           <Button
             onClick={() => {
-              setImportTempateOpen(false)
+              setImportTemplateOpen(false)
               client.query({ query: GET_TEMPLATE, variables: { id: selectedTemplate!._id } })
                 .then(({ error, data }) => {
                   if (error) throw error

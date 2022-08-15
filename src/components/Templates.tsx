@@ -28,8 +28,6 @@ const Templates: React.FC = () => {
   if (error) throw error
   if (loading) return <CircularLoading loading />
 
-  console.log(data)
-
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>模板管理</Typography>
