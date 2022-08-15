@@ -30,6 +30,7 @@ import { useQuery, useApolloClient, gql } from '@apollo/client'
 import Schema from 'schemastery'
 import { useSnackbar } from 'notistack'
 import CreateFieldPopup from './CreateFieldPopup'
+import { normalizeTitle } from '../utils'
 
 const getTypeName = (type: string) => {
   const schema = new Schema(JSON.parse(type))
@@ -68,7 +69,7 @@ const Schemas: React.FC = () => {
                 key={row._id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell component='th' scope='row'>{row.localization?.['zh-CN'] || row._id}</TableCell>
+                <TableCell component='th' scope='row'>{normalizeTitle(row.localization?.['zh-CN'] || row._id)}</TableCell>
                 <TableCell align='right'>{getTypeName(row.schema) || '文本'}</TableCell>
                 <TableCell align='right'>
                   <IconButton edge='end' size='small' onClick={() => setEditId(row._id)}>

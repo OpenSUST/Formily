@@ -33,6 +33,7 @@ import { TemplateData, FieldType } from '../types'
 import { useQuery, useApolloClient } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { useParams } from 'react-router-dom'
+import { normalizeTitle } from '../utils'
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
@@ -133,7 +134,8 @@ const Template: React.FC = () => {
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {option.localization?.['zh-CN'] || option._id}&nbsp;<Chip label={(typeNameMap as any)[option.schema.meta?.kind || 'text']} size='small' />
+                {normalizeTitle(option.localization?.['zh-CN'] || option._id)}
+                &nbsp;<Chip label={(typeNameMap as any)[option.schema.meta?.kind || 'text']} size='small' />
               </li>
             )}
             value={fieldsData}

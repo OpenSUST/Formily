@@ -27,7 +27,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import fields, { defaultValues, typeNameMap } from './fields'
 import Field from './fields/Field'
-import { compareTitle } from '../utils'
+import { compareTitle, normalizeTitle } from '../utils'
 import { CircularLoading } from './Loading'
 import { TemplateData, FieldType, TemplateType } from '../types'
 import {
@@ -71,11 +71,13 @@ const ItemCard: React.FC = () => {
   const [schema, others] = useMemo(() => {
     if (!data) return []
     let others: any, schema: Schema
+    const localization: Record<string, any> = {}
     if (id) {
       const rows = data.item.get
       let _id
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ;[{ _id, ...others }] = rows.items
+      console.log(rows)
       schema = new Schema(rows.schema)
     } else {
       const rows = data.template.get.keys
@@ -83,16 +85,15 @@ const ItemCard: React.FC = () => {
       others = { }
       ;(rows as FieldType[]).forEach(it => {
         if (it._id === '_id') return
-        const fn = (defaultValues as any)[(schema as any).dict[it._id]?.meta?.kind || 'text']
-        others[it._id] = fn()
-        formData.current[it._id] = fn()
+        others[it._id] = (defaultValues as any)[(schema as any).dict[it._id]?.meta?.kind || 'text']()
+        localization[it._id] = it.localization
       })
       Object.assign(formData.current, others)
     }
     const arr: FieldType[] = []
     for (const key in others) {
       if (skipFieldsList[key]) continue
-      arr.push({ _id: key, schema: (schema as any).dict[key], localization: {}, __typename: 'Key' }) // TODO: i18n
+      arr.push({ _id: key, schema: (schema as any).dict[key], localization: localization[key] || {}, __typename: 'Key' }) // TODO: i18n
     }
     setNewData(others)
     setFieldsData(arr)
@@ -123,7 +124,7 @@ const ItemCard: React.FC = () => {
     const arr = data.key.get.filter((it: any) => !skipFieldsList[it._id])
     arr.forEach((it: any) => {
       const cur = (schema as any).dict[it._id] = new Schema(JSON.parse(it.schema))
-      obj[it._id] = templateDataObj[it._id] ?? (defaultValues as any)[cur.meta?.kind || 'text']()
+      obj[it._id] = formData.current[it._id] = templateDataObj[it._id] ?? (defaultValues as any)[cur.meta?.kind || 'text']()
     })
     setNewData(obj)
   }
@@ -136,6 +137,7 @@ const ItemCard: React.FC = () => {
           {Object.entries(newData).sort((a, b) => compareTitle(a[0], b[0])).map(([key, value]) => {
             const kind: string = (schema as any).dict[key]?.meta?.kind
             const EditorComponent = ((fields as any)[kind] || fields.text).EditorComponent as Field<any>['EditorComponent']
+            const title = normalizeTitle(defaultFieldsName[key] || key)
             return (
               <TableRow key={key}>
                 <TableCell component='th' scope='row' className='delete'>
@@ -160,13 +162,13 @@ const ItemCard: React.FC = () => {
                   className='key'
                   sx={{ fontWeight: kind === 'title' ? 'bold' : undefined }}
                 >
-                  {defaultFieldsName[key] || key}
+                  {title}
                 </TableCell>
                 <TableCell>
                   <EditorComponent
                     key={key}
                     value={value}
-                    name={defaultFieldsName[key] || key}
+                    name={title}
                     keyName={key}
                     data={formData.current}
                     onSubmit={onSubmit}
@@ -223,7 +225,7 @@ const ItemCard: React.FC = () => {
               if (it.errors) throw it.errors
               enqueueSnackbar('保存成功!', { variant: 'success' })
               navigate('/item/' + (id || it.data.item.add))
-              // setTimeout(() => location.reload(), 100)
+              setTimeout(() => location.reload(), 100)
             })
             .catch(e => {
               console.error(e)
@@ -257,7 +259,7 @@ const ItemCard: React.FC = () => {
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {option.localization?.['zh-CN'] || option._id}&nbsp;<Chip label={(typeNameMap as any)[option.schema.meta?.kind || 'text']} size='small' />
+                {normalizeTitle(option.localization?.['zh-CN'] || option._id)}&nbsp;<Chip label={(typeNameMap as any)[option.schema.meta?.kind || 'text']} size='small' />
               </li>
             )}
             value={fieldsData}

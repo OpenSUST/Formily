@@ -1,6 +1,6 @@
 export const compareTitle = (a: string, b: string) => {
-  const arr = a.split('.')
-  const brr = b.split('.')
+  const arr = a.split('_')
+  const brr = b.split('_')
   let i = 0
   for (const it of arr) {
     // @ts-ignore
@@ -10,3 +10,5 @@ export const compareTitle = (a: string, b: string) => {
   }
   return arr.length - brr.length
 }
+
+export const normalizeTitle = (title: string) => (title || '').replace(/_/g, '.')

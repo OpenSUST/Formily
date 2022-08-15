@@ -13,7 +13,7 @@ import fields from './fields'
 import Field from './fields/Field'
 import { CircularLoading } from './Loading'
 import { GET_DATA, defaultFieldsName } from '../api'
-import { compareTitle } from '../utils'
+import { compareTitle, normalizeTitle } from '../utils'
 
 import { useQuery } from '@apollo/client'
 import { useParams } from 'react-router-dom'
@@ -54,7 +54,7 @@ const Item: React.FC = () => {
                       scope='row'
                       sx={{ fontWeight: kind === 'title' ? 'bold' : undefined }}
                     >
-                      {defaultFieldsName[key] || key}
+                      {normalizeTitle(defaultFieldsName[key] || key)}
                     </TableCell>
                     <TableCell><ViewComponent value={value as any} keyName={key} key={key} /></TableCell>
                   </TableRow>

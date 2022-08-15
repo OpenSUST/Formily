@@ -65,7 +65,7 @@ export default React.forwardRef(function CreateFieldPopup (_, ref) {
                   }
                 }
               `,
-              variables: { key, schema: JSON.stringify(defaultSchemas[keyType as Kind].toJSON()) }
+              variables: { key: key.replace(/\./g, '_'), schema: JSON.stringify(defaultSchemas[keyType as Kind].toJSON()) }
             }).then(it => {
               if (it.errors) throw it.errors
               enqueueSnackbar('添加字段成功!', { variant: 'success' })

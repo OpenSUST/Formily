@@ -9,7 +9,7 @@ import TableRow from '@mui/material/TableRow'
 import Container from '@mui/material/Container'
 // import ItemCard from './ItemCard'
 import fields from './fields'
-import { compareTitle } from '../utils'
+import { compareTitle, normalizeTitle } from '../utils'
 import { CircularLoading } from './Loading'
 import { GET_MULTI_ITEMS, defaultFieldsName } from '../api'
 
@@ -50,7 +50,7 @@ const Compare: React.FC = () => {
           scope='row'
           sx={{ fontWeight: kind === 'title' ? 'bold' : undefined }}
         >
-          {keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || defaultFieldsName[key] || key}
+          {normalizeTitle(keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || defaultFieldsName[key] || key)}
         </TableCell>
         {fieldsArray}
       </TableRow>
