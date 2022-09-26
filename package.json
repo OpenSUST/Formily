@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "scripts": {
     "start": "vite --port 1234",
-    "build": "vite build",
+    "build": "vite build && npm run copy",
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx,js,jsx",
-    "fix": "eslint src --fix --ext ts,tsx,js,jsx"
+    "fix": "eslint src --fix --ext ts,tsx,js,jsx",
+    "copy": "ncp public dist"
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
@@ -22,6 +23,7 @@
     "buffer": "^6.0.3",
     "graphql": "^16.5.0",
     "handsontable": "^12.1.2",
+    "ncp": "^2.0.0",
     "notistack": "^2.0.5",
     "preview-office-docs": "^1.0.2",
     "react": "^18.2.0",

@@ -7,7 +7,9 @@ if (!existsSync('config.json')) {
     color: 'red',
     name: '脆弱铅釉陶文物数据库',
     userMenuName: '铅釉陶',
-    cover: ''
+    cover: '',
+    blackTitle: false,
+    logo: ''
   }, null, 2))
 }
 

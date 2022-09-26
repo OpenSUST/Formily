@@ -24,7 +24,7 @@ import SearchIcon from '@mui/icons-material/Search'
 // import FavoriteIcon from '@mui/icons-material/Star'
 import CardContent from '@mui/material/CardContent'
 import { GET_ALL_COUNT, SEARCH } from '../api'
-import { name, cover } from '../../config.json'
+import { name, cover, blackTitle } from '../../config.json'
 
 import { useQuery, useApolloClient } from '@apollo/client'
 import { useSnackbar } from 'notistack'
@@ -99,7 +99,13 @@ const Home: React.FC = () => {
         >
           {searchData
             ? <Toolbar />
-            : <Typography variant='h2' sx={{ mt: '-18vh', mb: 3, color: '#fff', fontWeight: 'bold', WebkitTextStroke: '1px #000', textAlign: 'center' }}>{name}</Typography>}
+            : (
+              <Typography
+                variant='h2'
+                sx={{ mt: '-18vh', mb: 3, color: blackTitle ? '#000' : '#fff', fontWeight: 'bold', WebkitTextStroke: blackTitle ? '1px #fff' : '1px #000', textAlign: 'center' }}
+              >
+                {name}
+              </Typography>)}
           <Autocomplete
             freeSolo
             disableClearable

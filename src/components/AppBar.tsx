@@ -28,7 +28,7 @@ import { useSnackbar } from 'notistack'
 import { useNavigate } from 'react-router-dom'
 import { useApolloClient } from '@apollo/client'
 import { FavoriteType } from '../types'
-import { name, userMenuName } from '../../config.json'
+import { name, userMenuName, logo } from '../../config.json'
 import { isLogin, username, isAdmin, AUTH, LOGOUT } from '../api'
 
 const ResponsiveAppBar = () => {
@@ -56,6 +56,7 @@ const ResponsiveAppBar = () => {
     <AppBar position='fixed'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
+          {logo && <img alt={name} src={logo} style={{ width: 30, height: 30, marginRight: 8 }} />}
           <Typography
             variant='h6'
             noWrap
