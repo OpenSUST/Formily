@@ -26,4 +26,4 @@ dist-ssr
 node_modules/
 
 /config.json
-/favicon.svg
+/public
