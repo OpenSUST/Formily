@@ -28,9 +28,11 @@
     "react-dom": "^18.2.0",
     "react-medium-image-zoom": "^5.0.1",
     "react-router-dom": "^6.3.0",
-    "schemastery": "^3.5.1"
+    "schemastery": "^3.5.1",
+    "vite": "^3.0.7"
   },
   "devDependencies": {
+    "@types/node": "^18.7.21",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
@@ -44,7 +46,6 @@
     "eslint-plugin-n": "^15.2.4",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-react": "^7.30.1",
-    "typescript": "^4.7.4",
-    "vite": "^3.0.7"
+    "typescript": "^4.7.4"
   }
 }
