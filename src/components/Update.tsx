@@ -77,8 +77,8 @@ const ItemCard: React.FC = () => {
       let _id
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ;[{ _id, ...others }] = rows.items
-      console.log(rows)
       schema = new Schema(rows.schema)
+      data.key.get.forEach((it: any) => (localization[it._id] = it.localization))
     } else {
       const rows = data.template.get.keys
       schema = Schema.object(Object.fromEntries(rows.map((row: any) => [row._id, new Schema(JSON.parse(row.schema))])))

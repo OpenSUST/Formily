@@ -13,9 +13,9 @@ const components: Field<string[]> = {
   name: '多表格',
   schema: createSchema('multiCSV', Schema.array(Schema.string())),
   getDefaultValue () { return [] },
-  isEmpty (value) { return !value.length },
+  isEmpty (value) { return !value.length || (value.length === 1 && !value[0]) },
   ViewComponent ({ value, keyName }) {
-    if (!value.length) value.push('')
+    if (!value.length) value = ['']
     const [index, setIndex] = useState(0)
     const hotTableComponent = useRef<HotTable>(null)
     useEffect(() => {
@@ -38,17 +38,16 @@ const components: Field<string[]> = {
         >
           导出文件
         </Button>
-        <div style={{ maxHeight: 400, width: '100%', marginTop: 8 }}>
-          <HotTable
-            colHeaders
-            rowHeaders
-            height='auto'
-            readOnly
-            ref={hotTableComponent}
-            language='zh-CN'
-            licenseKey='non-commercial-and-evaluation'
-          />
-        </div>
+        <HotTable
+          colHeaders
+          rowHeaders
+          height={400}
+          readOnly
+          ref={hotTableComponent}
+          language='zh-CN'
+          style={{ width: '100%', marginTop: 8 }}
+          licenseKey='non-commercial-and-evaluation'
+        />
         <Pagination
           page={index + 1}
           count={value.length}
@@ -58,7 +57,7 @@ const components: Field<string[]> = {
     )
   },
   EditorComponent ({ value, onSubmit, keyName, data }) {
-    if (!value.length) value.push('')
+    if (!value.length) value = ['']
     const [index, setIndex] = useState(0)
     const indexRef = useRef(0)
     const [newData, setNewData] = useState<string[]>(() => [...value])
@@ -144,17 +143,16 @@ const components: Field<string[]> = {
         >
           删除表格
         </Button>
-        <div style={{ height: 400, width: '100%', marginTop: 8 }}>
-          <HotTable
-            colHeaders
-            rowHeaders
-            contextMenu
-            height='auto'
-            language='zh-CN'
-            ref={hotTableComponent}
-            licenseKey='non-commercial-and-evaluation'
-          />
-        </div>
+        <HotTable
+          colHeaders
+          rowHeaders
+          contextMenu
+          height={400}
+          language='zh-CN'
+          ref={hotTableComponent}
+          style={{ width: '100%', marginTop: 8 }}
+          licenseKey='non-commercial-and-evaluation'
+        />
         <Pagination
           page={index + 1}
           count={newData.length}

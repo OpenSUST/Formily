@@ -31,18 +31,17 @@ const components: Field<string> = {
         >
           导出文件
         </Button>
-        <div style={{ maxHeight: 400, width: '100%', marginTop: 8 }}>
-          <HotTable
-            colHeaders
-            rowHeaders
-            height='auto'
-            readOnly
-            ref={hotTableComponent}
-            data={useMemo<string[][]>(() => value.replace(/\r/g, '').split('\n').map(it => it.split(',')), [value])}
-            language='zh-CN'
-            licenseKey='non-commercial-and-evaluation'
-          />
-        </div>
+        <HotTable
+          colHeaders
+          rowHeaders
+          height={400}
+          readOnly
+          ref={hotTableComponent}
+          style={{ width: '100%', marginTop: 8 }}
+          data={useMemo<string[][]>(() => value.replace(/\r/g, '').split('\n').map(it => it.split(',')), [value])}
+          language='zh-CN'
+          licenseKey='non-commercial-and-evaluation'
+        />
       </div>
     )
   },
@@ -103,18 +102,17 @@ const components: Field<string> = {
             }}
           />
         </Button>
-        <div style={{ height: 400, width: '100%', marginTop: 8 }}>
-          <HotTable
-            colHeaders
-            rowHeaders
-            contextMenu
-            height='auto'
-            data={useMemo<string[][]>(() => value.replace(/\r/g, '').split('\n').map(it => it.split(',')), [value])}
-            language='zh-CN'
-            ref={hotTableComponent}
-            licenseKey='non-commercial-and-evaluation'
-          />
-        </div>
+        <HotTable
+          colHeaders
+          rowHeaders
+          contextMenu
+          height={400}
+          data={useMemo<string[][]>(() => value.replace(/\r/g, '').split('\n').map(it => it.split(',')), [value])}
+          language='zh-CN'
+          ref={hotTableComponent}
+          style={{ width: '100%', marginTop: 8 }}
+          licenseKey='non-commercial-and-evaluation'
+        />
       </div>
     )
   }

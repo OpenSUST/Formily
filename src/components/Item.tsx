@@ -22,10 +22,15 @@ import { useParams } from 'react-router-dom'
 
 const Item: React.FC = () => {
   const { id } = useParams<{ id: string }>()
+  const [showAllFields, setShowAllFields] = useState(false)
   const { loading, error, data } = useQuery(GET_DATA, { variables: { id } })
-  const [showAllFields, setShowAllFields] = useState(true)
 
-  const schema = useMemo(() => data && data.item.get.schema && new Schema(data.item.get.schema), [data && data.item.get.schema])
+  const [schema, localizations] = useMemo(() => {
+    if (!data) return [null, { }]
+    const localizations: Record<string, string> = { }
+    data.key.get.forEach((it: any) => (localizations[it._id] = it.localization['zh-CN']))
+    return [data.item.get.schema && new Schema(data.item.get.schema), localizations] as const
+  }, [data && data.item.get.schema])
 
   if (error) throw error
   if (loading || !schema) return <CircularLoading loading />
@@ -62,7 +67,7 @@ const Item: React.FC = () => {
                       scope='row'
                       sx={{ fontWeight: kind === 'title' ? 'bold' : undefined }}
                     >
-                      {normalizeTitle(defaultFieldsName[key] || key)}
+                      {normalizeTitle(localizations[key] || defaultFieldsName[key] || key)}
                     </TableCell>
                     <TableCell><ViewComponent value={value as any} keyName={key} key={key} /></TableCell>
                   </TableRow>

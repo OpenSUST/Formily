@@ -1,4 +1,6 @@
-import { gql } from '@apollo/client'
+import { gql, useApolloClient } from '@apollo/client'
+import { useState, useEffect } from 'react'
+import { useSnackbar } from 'notistack'
 
 export const token = localStorage.getItem('token') || ''
 export const username = localStorage.getItem('username') || ''
@@ -27,6 +29,7 @@ query Request ($id: String!) {
       schema
     }
   }
+  key { get { _id localization } }
 }
 `
 
@@ -176,6 +179,16 @@ export const LIST_KEYS = gql`query {
   }
 }`
 
+export const GET_KEYS_LOCALIZATION = gql`
+query ($ids: [String]) {
+  key {
+    get (ids: $ids) {
+      _id
+      localization
+    }
+  }
+}`
+
 export const GET_KEYS_DATA = gql`
 query ($ids: [String]) {
   key {
@@ -215,3 +228,24 @@ mutation ($id: String!, $name: String!, $payload: JSON!) {
   template { update (id: $id, name: $name, payload: $payload) }
 }
 `
+
+export const getLocalizations = (obj: any) => {
+  const client = useApolloClient()
+  const { enqueueSnackbar } = useSnackbar()
+  const [localizations, setLocalizations] = useState<Record<string, string>>({})
+  useEffect(() => {
+    if (!obj) return
+    client.query({ query: GET_KEYS_LOCALIZATION, variables: { ids: Object.keys(obj) } })
+      .then(({ error, data }) => {
+        if (error) throw error
+        const localizations: Record<string, string> = { }
+        data.key.get.forEach((it: any) => (localizations[it._id] = it.localization['zh-CN']))
+        setLocalizations(localizations)
+      })
+      .catch(e => {
+        console.error(e)
+        enqueueSnackbar('获取数据失败!', { variant: 'error' })
+      })
+  }, [obj])
+  return localizations
+}
