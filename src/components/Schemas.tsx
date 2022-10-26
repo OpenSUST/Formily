@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
@@ -22,7 +22,7 @@ import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import fields from './fields'
-import { skipFieldsList } from '../api'
+import { skipFieldsList, UPDATE_KEY_META, UPDATE_KEY_LOCALIZATION } from '../api'
 import { openDialog } from './EnsureDialog'
 import { CircularLoading } from './Loading'
 
@@ -42,10 +42,26 @@ const Schemas: React.FC = () => {
   const client = useApolloClient()
   const [editId, setEditId] = useState('')
   const [newName, setNewName] = useState('')
+  const [extraData, setExtraData] = useState('')
+  const [hasExtraData, setHasExtraData] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
   const createFieldPopup = useRef<{ open(): void }>()
 
   const { loading, error, data } = useQuery(gql`query { key { get { _id localization schema } } }`)
+
+  useEffect(() => {
+    if (!editId || !data?.key?.get) return
+    const cur = data.key.get.find((item: any) => item._id === editId)
+    if (!cur) return
+
+    setNewName(normalizeTitle(cur.localization?.['zh-CN'] || editId))
+    const schema = new Schema(JSON.parse(cur.schema))
+    console.log(fields[schema.meta!.kind!])
+    if (fields[schema.meta!.kind!]?.hasExtraData) {
+      setHasExtraData(true)
+      setExtraData(schema.meta!.extraData! || '')
+    } else setHasExtraData(false)
+  }, [editId])
 
   if (error) throw error
   if (loading) return <CircularLoading loading />
@@ -116,6 +132,17 @@ const Schemas: React.FC = () => {
             value={newName}
             onChange={e => setNewName(e.target.value)}
           />
+          {hasExtraData && (
+            <TextField
+              fullWidth
+              multiline
+              margin='dense'
+              variant='standard'
+              label='额外数据'
+              value={extraData}
+              onChange={e => setExtraData(e.target.value)}
+            />
+          )}
         </DialogContent>
         <DialogActions>
           <Button
@@ -130,20 +157,33 @@ const Schemas: React.FC = () => {
             onClick={() => {
               setNewName('')
               setEditId('')
-              client.mutate({
-                mutation: gql`
-                  mutation ($key: String!, $name: String!) {
-                    key {
-                      setLocalization(key: $key, lang: "zh-CN", value: $name)
-                    }
-                  }
-                `,
-                variables: { key: editId, name: newName }
-              }).then(it => {
-                if (it.errors) throw it.errors[0]
+              const current = data.key.get.find((item: any) => item._id === editId)
+              if (!current) return
+              const promises = []
+              if ((current.localization?.['zh-CN'] || editId) !== newName) {
+                promises.push(client.mutate({
+                  mutation: UPDATE_KEY_LOCALIZATION,
+                  variables: { key: editId, value: newName }
+                }))
+              }
+              if (hasExtraData) {
+                const schema = new Schema(JSON.parse(current.schema))
+                if (schema.meta!.extraData !== extraData) {
+                  promises.push(client.mutate({
+                    mutation: UPDATE_KEY_META,
+                    variables: { key: editId, value: { extraData } }
+                  }).then(it => {
+                    if (!it.data?.key?.setMeta) throw new Error('Failed to update key meta!')
+                    return it
+                  }))
+                }
+              }
+              Promise.all(promises).then(it => {
+                const ret = it.find(i => i.errors)
+                if (ret) throw ret.errors![0]
                 enqueueSnackbar('修改字段成功!', { variant: 'success' })
                 setTimeout(() => window.location.reload(), 1000) // TODO
-              }).catch(e => {
+              }, e => {
                 console.error(e)
                 enqueueSnackbar('修改字段失败!', { variant: 'error' })
               })

@@ -229,6 +229,18 @@ mutation ($id: String!, $name: String!, $payload: JSON!) {
 }
 `
 
+export const UPDATE_KEY_LOCALIZATION = gql`
+mutation ($key: String!, $value: String!) {
+  key { setLocalization(key: $key, lang: "zh-CN", value: $value) }
+}
+`
+
+export const UPDATE_KEY_META = gql`
+mutation ($key: String!, $value: JSON!) {
+  key { setMeta(key: $key, meta: $value) }
+}
+`
+
 export const getLocalizations = (obj: any) => {
   const client = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()

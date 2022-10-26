@@ -114,6 +114,7 @@ const Template: React.FC = () => {
       <Dialog
         open={addFieldOpen}
         onClose={() => setAddFieldOpen(false)}
+        sx={{ '& .MuiDialog-paper': { maxHeight: '40vh' }, '& .MuiDialog-container': { alignItems: 'flex-start', paddingTop: '10vh' } }}
       >
         <DialogTitle>添加新字段</DialogTitle>
         <DialogContent>

@@ -35,6 +35,7 @@ export type Kind = 'file' | 'image' | 'csv' | 'multiCSV' | 'liveOffice' | 'numbe
 
 declare module 'schemastery' {
   interface Meta {
-    kind?: Kind;
+    kind?: Kind
+    extraData?: string
   }
 }

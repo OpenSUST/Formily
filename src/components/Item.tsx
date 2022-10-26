@@ -58,7 +58,8 @@ const Item: React.FC = () => {
           <Table sx={{ tableLayout: 'fixed' }}>
             <TableBody>
               {entires.sort((a, b) => compareTitle(a[0], b[0])).map(([key, value]) => {
-                const kind: string = schema.dict[key]?.meta?.kind
+                const meta = schema.dict[key]?.meta
+                const kind: string = meta?.kind
                 const ViewComponent: Field<any>['ViewComponent'] = (fields[kind] || fields.text).ViewComponent
                 return (
                   <TableRow key={key} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '& th': { width: 150 }, '& td': { pl: 0, textAlign: 'justify' }, '& th, & td': { verticalAlign: 'top' } }}>
@@ -69,7 +70,7 @@ const Item: React.FC = () => {
                     >
                       {normalizeTitle(localizations[key] || defaultFieldsName[key] || key)}
                     </TableCell>
-                    <TableCell><ViewComponent value={value as any} keyName={key} key={key} /></TableCell>
+                    <TableCell><ViewComponent value={value as any} keyName={key} key={key} meta={meta} /></TableCell>
                   </TableRow>
                 )
               })}

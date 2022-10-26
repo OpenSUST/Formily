@@ -37,11 +37,12 @@ const Compare: React.FC = () => {
     names.push(<TableCell key={_id}>{title}</TableCell>)
   })
   for (const key in obj) {
-    const kind: string = schema.dict[key]?.meta?.kind
+    const meta = schema.dict[key]?.meta
+    const kind: string = meta?.kind
     const ViewComponent = (fields[kind] || fields.text).ViewComponent
     const fieldsArray: JSX.Element[] = []
     for (let i = 0; i < data.item.get.items.length; i++) {
-      fieldsArray.push(<TableCell key={i}>{obj[key][i] != null && <ViewComponent value={obj[key][i]} keyName={key} />}</TableCell>)
+      fieldsArray.push(<TableCell key={i}>{obj[key][i] != null && <ViewComponent value={obj[key][i]} keyName={key} meta={meta} />}</TableCell>)
     }
     arr.push(
       <TableRow key={key} sx={styles}>

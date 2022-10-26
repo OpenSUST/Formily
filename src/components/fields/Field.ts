@@ -1,11 +1,12 @@
-import Schema from 'schemastery'
+import Schema, { Meta } from 'schemastery'
 
 export default interface Field <T> {
   name: string
   schema: Schema
   getDefaultValue (): T
   isEmpty (value: T): boolean
-  ViewComponent: React.ElementType<{ value: T, keyName: string }>
+  hasExtraData?: boolean
+  ViewComponent: React.ElementType<{ value: T, keyName: string, meta: Meta }>
   EditorComponent: React.ElementType<{
     value: T
     name: string
