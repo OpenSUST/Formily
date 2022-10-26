@@ -13,8 +13,10 @@ const components: Field<string> = {
   ViewComponent ({ value, meta }) {
     const option = useMemo(() => {
       try {
-        // eslint-disable-next-line no-eval
-        return meta.extraData ? eval(`(function (data) { return ${meta.extraData} })`)(value.replace(/\r/g, '').split('\n').map(it => it.split(','))) : JSON.parse(value.endsWith(',') ? value.slice(0, -1) : value)
+        return meta.extraData
+          // eslint-disable-next-line no-eval
+          ? eval(`(function (data) { ${meta.extraData.includes('return') ? meta.extraData : 'return ' + meta.extraData} })`)(value.replace(/\r/g, '').split('\n').map(it => it.split(',')))
+          : JSON.parse(value.endsWith(',') ? value.slice(0, -1) : value)
       } catch (err) {
         console.error(err)
         return {}
