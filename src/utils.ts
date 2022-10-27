@@ -3,10 +3,10 @@ export const compareTitle = (a: string, b: string) => {
   const brr = b.split('_')
   let i = 0
   for (const it of arr) {
-    // @ts-ignore
-    const val = it - brr[i++]
+    const cur = parseInt(it)
+    const val = cur - parseInt(brr[i++])
     if (val) return val
-    else if (isNaN(+it)) return 1
+    else if (isNaN(cur)) return 1
   }
   return arr.length - brr.length
 }

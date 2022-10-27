@@ -17,7 +17,7 @@ const components: Field<string> = {
       try {
         return [meta.extraData
           // eslint-disable-next-line no-eval
-          ? eval(`(function (data, events) { ${meta.extraData.includes('return') ? meta.extraData : 'return ' + meta.extraData} })`)(value.replace(/\r/g, '').split('\n').map(it => it.split(',')), events)
+          ? eval(`(function (data, events) { ${meta.extraData.includes('return ') ? meta.extraData : 'return ' + meta.extraData}; })`)(value.replace(/\r/g, '').split('\n').map(it => it.split(',')), events)
           : JSON.parse(value.endsWith(',') ? value.slice(0, -1) : value), events]
       } catch (err) {
         console.error(err)

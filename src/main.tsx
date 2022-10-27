@@ -37,7 +37,7 @@ const theme = createTheme(
 const httpLink = createHttpLink({
   // @ts-ignore
   uri: process.env.NODE_ENV === 'development'
-    ? location.protocol === 'https:' ? 'https://kr.hydro.ac/opensust/api' : 'http://8.130.110.136/api'
+    ? location.protocol === 'https:' ? 'https://kr.hydro.ac/opensust/api' : 'http://8.130.110.136:8082/api'
     : '/api'
 })
 const authLink = setContext((_, { headers }) => ({
