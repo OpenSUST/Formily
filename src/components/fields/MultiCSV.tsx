@@ -5,9 +5,6 @@ import Button from '@mui/material/Button'
 import Pagination from '@mui/material/Pagination'
 import Field, { createSchema } from './Field'
 import { HotTable } from '@handsontable/react'
-import { registerAllModules } from 'handsontable/registry'
-
-registerAllModules()
 
 const components: Field<string[]> = {
   name: '多表格',
