@@ -107,7 +107,7 @@ const components: Field<string> = {
           rowHeaders
           contextMenu
           height={400}
-          data={useMemo<string[][]>(() => value.replace(/\r/g, '').split('\n').map(it => it.split(',')), [value])}
+          data={useMemo<string[][]>(() => ('' + value).replace(/\r/g, '').split('\n').map(it => it.split(',')), [value])}
           language='zh-CN'
           ref={hotTableComponent}
           style={{ width: '100%', marginTop: 8 }}
