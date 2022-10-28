@@ -1,6 +1,6 @@
 export const compareTitle = (a: string, b: string) => {
-  const arr = a.split('_')
-  const brr = b.split('_')
+  const arr = a.replace(/_/g, '.').split('.')
+  const brr = b.replace(/_/g, '.').split('.')
   let i = 0
   for (const it of arr) {
     const cur = parseInt(it)

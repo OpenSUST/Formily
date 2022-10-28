@@ -41,7 +41,7 @@ const Item: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [{ title, description, _id, ...others }] = items
 
-  let entires = Object.entries(others)
+  let entires = Object.entries(others).map(([key, value]) => [key, value, normalizeTitle(localizations[key] || defaultFieldsName[key] || key)] as const)
   if (!showAllFields) entires = entires.filter(([key, value]) => !(fields[schema.dict[key]?.meta?.kind] || fields.text).isEmpty(value))
 
   return (
@@ -57,7 +57,7 @@ const Item: React.FC = () => {
           </Typography>
           <Table sx={{ tableLayout: 'fixed' }}>
             <TableBody>
-              {entires.sort((a, b) => compareTitle(a[0], b[0])).map(([key, value]) => {
+              {entires.sort((a, b) => compareTitle(a[2], b[2])).map(([key, value, name]) => {
                 const meta = schema.dict[key]?.meta
                 const kind: string = meta?.kind
                 const ViewComponent: Field<any>['ViewComponent'] = (fields[kind] || fields.text).ViewComponent
@@ -68,7 +68,7 @@ const Item: React.FC = () => {
                       scope='row'
                       sx={{ fontWeight: kind === 'title' ? 'bold' : undefined }}
                     >
-                      {normalizeTitle(localizations[key] || defaultFieldsName[key] || key)}
+                      {name}
                     </TableCell>
                     <TableCell><ViewComponent value={value as any} keyName={key} key={key} meta={meta} /></TableCell>
                   </TableRow>

@@ -134,10 +134,9 @@ const ItemCard: React.FC = () => {
       <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>{(newData as any).title || ''}</Typography>
       <Table sx={{ tableLayout: 'fixed' }}>
         <TableBody sx={{ '& .key': { width: 150 }, '& .delete': { width: 26, pl: 1 }, '& td': { pl: 0, textAlign: 'justify' } }}>
-          {Object.entries(newData).sort((a, b) => compareTitle(a[0], b[0])).map(([key, value]) => {
+          {Object.entries(newData).map(([key, value]) => [key, value, normalizeTitle(defaultFieldsName[key] || key)] as const).sort((a, b) => compareTitle(a[2], b[2])).map(([key, value, title]) => {
             const kind: string = (schema as any).dict[key]?.meta?.kind
             const EditorComponent = (fields[kind] || fields.text).EditorComponent as Field<any>['EditorComponent']
-            const title = normalizeTitle(defaultFieldsName[key] || key)
             return (
               <TableRow key={key}>
                 <TableCell component='th' scope='row' className='delete'>
