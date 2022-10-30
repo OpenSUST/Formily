@@ -81,7 +81,7 @@ const Viewer: React.FC<{ files: Record<string, Blob>, model: string, material: s
         <Suspense fallback={null}>
           <primitive object={object} />
         </Suspense>
-        <OrbitControls makeDefault enablePan={false} enableZoom enableRotate maxZoom={5} minZoom={0.5} enable enableDamping />
+        <OrbitControls makeDefault enablePan={false} enableZoom enableRotate maxZoom={1} minZoom={0.1} enable enableDamping />
       </Bounds>
     </Canvas>
   )
