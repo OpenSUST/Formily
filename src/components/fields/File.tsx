@@ -8,17 +8,8 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FileUpload, { FileObject } from '../FileUploader'
 import { UPLOAD } from '../../api'
+import { dataURItoBlob } from '../../utils'
 import { useApolloClient } from '@apollo/client'
-
-function dataURItoBlob (dataURI: string) {
-  const byteString = atob(dataURI.split(',')[1])
-  const ab = new ArrayBuffer(byteString.length)
-  const ia = new Uint8Array(ab)
-  for (let i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i)
-  }
-  return new Blob([ab], { type: dataURI.split(',')[0].split(':')[1].split(';')[0] })
-}
 
 const components: Field<string[]> = {
   name: '文件',

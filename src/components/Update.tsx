@@ -290,7 +290,8 @@ const ItemCard: React.FC = () => {
               fieldsData.forEach(it => {
                 const cur = (schema as any).dict[it._id] = it.schema
                 obj[it._id] = fields[cur.meta?.kind || 'text'].getDefaultValue()
-                if (!(it._id in newData)) formData.current[it._id] = obj[it._id]
+                if (it._id in newData) obj[it._id] = newData[it._id]
+                else formData.current[it._id] = obj[it._id]
               })
               for (const key in formData.current) {
                 if (!(key in obj)) {

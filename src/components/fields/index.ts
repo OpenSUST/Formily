@@ -8,7 +8,8 @@ import multiCharts from './MultiCharts'
 import csv from './CSV'
 import multiCSV from './MultiCSV'
 import file from './File'
+import model from './Model'
 import title from './Title'
 
-const obj = { text, number, image, liveOffice, csv, multiCSV, file, title, chart, multiCharts }
+const obj = { text, number, image, liveOffice, csv, multiCSV, file, model, title, chart, multiCharts }
 export default obj as typeof obj & { [key: string]: Field<any> }
