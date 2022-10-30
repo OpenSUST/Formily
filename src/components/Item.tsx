@@ -39,9 +39,9 @@ const Item: React.FC = () => {
 
   if (!items.length) throw new Error('找不到当前的物品')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [{ title, description, _id, ...others }] = items
+  const [{ title, description, model, _id, ...others }] = items
 
-  let entires = Object.entries(others).map(([key, value]) => [key, value, normalizeTitle(localizations[key] || defaultFieldsName[key] || key)] as const)
+  let entires = Object.entries(others).map(([key, value]) => [key, value, normalizeTitle(defaultFieldsName[key] || localizations[key] || key)] as const)
   if (!showAllFields) entires = entires.filter(([key, value]) => !(fields[schema.dict[key]?.meta?.kind] || fields.text).isEmpty(value))
 
   return (
@@ -49,7 +49,7 @@ const Item: React.FC = () => {
       <Grid container spacing={4} sx={{ flexDirection: { md: 'row-reverse' } }}>
         <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, padding: '0!important' }} />
         <Grid item xs={12} md={4} sx={{ maxWidth: { md: '300px' }, position: { md: 'fixed' }, width: '100%' }}>
-          <ItemCard title={title} description={description} image={others.images?.[0]} id={id!} />
+          <ItemCard title={title} description={description} image={others.images?.[0]} id={id!} model={model} />
         </Grid>
         <Grid item sx={{ flex: '1', width: 0 }}>
           <Typography variant='h4' component='h1' sx={{ fontWeight: 'bold' }}>{title}&nbsp;

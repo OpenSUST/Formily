@@ -51,7 +51,7 @@ const Compare: React.FC = () => {
           scope='row'
           sx={{ fontWeight: kind === 'title' ? 'bold' : undefined }}
         >
-          {normalizeTitle(keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || defaultFieldsName[key] || key)}
+          {normalizeTitle(defaultFieldsName[key] || keys.find((i: any) => i._id === key)?.localization?.['zh-CN'] || key)}
         </TableCell>
         {fieldsArray}
       </TableRow>

@@ -90,6 +90,8 @@ const components: Field<string[]> = {
             if (!data[keyName] && list.length) data[keyName] = [...value]
             update(id + 1)
           }}
+          // eslint-disable-next-line react/jsx-handler-names
+          onError={console.log}
           allowedExtensions={[]}
           containerProps={{ style: { display: 'inline-block' } }}
         />

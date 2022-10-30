@@ -11,8 +11,8 @@ export const skipFieldsList: Record<string, true | undefined> = {
   _id: true,
   description: true,
   images: true,
-  title: true,
-  model: true
+  title: true
+  // model: true
 }
 
 export const defaultFieldsName: Record<string, string> = {

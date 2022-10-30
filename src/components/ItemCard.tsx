@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import Model from './fields/Model'
 import { openDialog } from './EnsureDialog'
 import { FavoriteType } from '../types'
 import { isLogin } from '../api'
@@ -16,7 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { gql, useApolloClient } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 
-const ItemCard: React.FC<{ image: string, title: string, description: string, id: string }> = ({ image, title, description, id }) => {
+const ItemCard: React.FC<{ image: string, title: string, description: string, id: string, model?: string }> = ({ image, title, description, id, model }) => {
   const navigate = useNavigate()
   const [isFavorite, setFavorite] = useState(() => {
     const data = JSON.parse(localStorage.getItem('favorites') || '{}')
@@ -40,14 +41,16 @@ const ItemCard: React.FC<{ image: string, title: string, description: string, id
         }
         title={title}
       />
-      {image && (
-        <CardMedia
-          component='img'
-          height='200'
-          image={image}
-          alt={title}
-        />
-      )}
+      {model
+        ? <Model.ViewComponent value={model} key={model} keyName='model' meta={{ }} />
+        : image && (
+          <CardMedia
+            component='img'
+            height='200'
+            image={image}
+            alt={title}
+          />
+        )}
       <CardContent>
         <Typography variant='body2' color='text.secondary'>{description}</Typography>
       </CardContent>

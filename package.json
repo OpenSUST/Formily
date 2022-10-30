@@ -19,6 +19,7 @@
     "@mui/material": "^5.10.0",
     "@mui/styles": "^5.9.3",
     "@mui/x-data-grid": "^5.15.2",
+    "@react-three/drei": "^9.40.0",
     "@react-three/fiber": "^8.9.0",
     "buffer": "^6.0.3",
     "echarts": "^5.4.0",
@@ -34,6 +35,7 @@
     "react-router-dom": "^6.3.0",
     "schemastery": "^3.5.1",
     "three": "^0.146.0",
+    "use-error-boundary": "^2.0.6",
     "vite": "^3.0.7"
   },
   "devDependencies": {

@@ -13,7 +13,17 @@ if (!existsSync('config.json')) {
   }, null, 2))
 }
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()]
+  plugins: [react()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          echarts: ['echarts', 'echarts-for-react'],
+          three: ['three', 'three-stdlib', '@react-three/drei', '@react-three/fiber'],
+          handsontable: ['handsontable', '@handsontable/react']
+        }
+      }
+    }
+  }
 })
