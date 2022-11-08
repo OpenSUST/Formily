@@ -5,7 +5,7 @@ import Schema from 'schemastery'
 import Zoom from 'react-medium-image-zoom'
 import ClearIcon from '@mui/icons-material/Clear'
 import Box from '@mui/material/Box'
-import FileUpload, { FileObject } from '../FileUploader'
+import FileUpload, { FileObject } from 'react-mui-fileuploader'
 import { UPLOAD } from '../../api'
 import { useApolloClient } from '@apollo/client'
 
@@ -13,9 +13,7 @@ function dataURItoBlob (dataURI: string) {
   const byteString = atob(dataURI.split(',')[1])
   const ab = new ArrayBuffer(byteString.length)
   const ia = new Uint8Array(ab)
-  for (let i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i)
-  }
+  for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i)
   return new Blob([ab], { type: dataURI.split(',')[0].split(':')[1].split(';')[0] })
 }
 

@@ -28,8 +28,10 @@ import { useSnackbar } from 'notistack'
 import { useNavigate } from 'react-router-dom'
 import { useApolloClient } from '@apollo/client'
 import { FavoriteType } from '../types'
-import { name, userMenuName, logo } from '../../config.json'
+import { name as name_, userMenuName, logo } from '../../config.json'
 import { isLogin, username, isAdmin, AUTH, LOGOUT } from '../api'
+
+const name = name_ || 'Formily'
 
 const ResponsiveAppBar = () => {
   const navigate = useNavigate()
@@ -138,7 +140,7 @@ const ResponsiveAppBar = () => {
                     navigate('/users')
                   }}
                 >
-                  <Typography textAlign='center'>{userMenuName}用户管理</Typography>
+                  <Typography textAlign='center'>{userMenuName || ''}用户管理</Typography>
                 </MenuItem>
               )}
               {isAdmin && (

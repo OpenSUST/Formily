@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef, useState, useMemo, Suspense, useLayoutEffect } from 'react'
 import Field, { createSchema } from './Field'
-import FileUpload, { FileObject } from '../FileUploader'
+import FileUpload, { FileObject } from 'react-mui-fileuploader'
 import DeleteIcon from '@mui/icons-material/Delete'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -81,7 +81,7 @@ const Viewer: React.FC<{ files: Record<string, Blob>, model: string, material: s
         <Suspense fallback={null}>
           <primitive object={object} />
         </Suspense>
-        <OrbitControls makeDefault enablePan={false} enableZoom enableRotate maxZoom={1} minZoom={0.1} enable enableDamping />
+        <OrbitControls makeDefault enablePan={false} enableZoom enableRotate maxZoom={1} minZoom={0.1} enabled enableDamping />
       </Bounds>
     </Canvas>
   )

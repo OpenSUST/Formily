@@ -24,7 +24,7 @@ import SearchIcon from '@mui/icons-material/Search'
 // import FavoriteIcon from '@mui/icons-material/Star'
 import CardContent from '@mui/material/CardContent'
 import { GET_ALL_COUNT, SEARCH } from '../api'
-import { name, cover, blackTitle } from '../../config.json'
+import { name, cover, blackTitle, copyright } from '../../config.json'
 
 import { useQuery, useApolloClient } from '@apollo/client'
 import { useSnackbar } from 'notistack'
@@ -104,7 +104,7 @@ const Home: React.FC = () => {
                 variant='h2'
                 sx={{ mt: '-18vh', mb: 3, color: blackTitle ? '#000' : '#fff', fontWeight: 'bold', WebkitTextStroke: blackTitle ? '1px #fff' : '1px #000', textAlign: 'center' }}
               >
-                {name}
+                {name || 'Formily'}
               </Typography>)}
           <Autocomplete
             freeSolo
@@ -234,7 +234,7 @@ const Home: React.FC = () => {
         </Box>
       )}
       <Box sx={{ backgroundColor: theme => theme.palette.background.default, textAlign: 'center', padding: '30px 0' }}>
-        Copyright © 2022 Shaanxi University of Science & Technology.
+        Copyright © {new Date().getFullYear()} {copyright || 'Shirasawa'}.
       </Box>
     </>
   )

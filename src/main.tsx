@@ -19,7 +19,7 @@ import { setContext } from '@apollo/client/link/context'
 import { registerLanguageDictionary, zhCN as HandsonTableZHCN } from 'handsontable/i18n'
 import { registerPlugin, UndoRedo } from 'handsontable/plugins'
 
-document.title = name
+if (name) document.title = name
 
 registerPlugin(UndoRedo)
 registerLanguageDictionary(HandsonTableZHCN)
