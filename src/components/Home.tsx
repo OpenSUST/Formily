@@ -234,7 +234,7 @@ const Home: React.FC = () => {
         </Box>
       )}
       <Box sx={{ backgroundColor: theme => theme.palette.background.default, textAlign: 'center', padding: '30px 0' }}>
-        Copyright © {new Date().getFullYear()} {copyright || 'Shirasawa'}.
+        {copyright as any !== false && `Copyright © ${new Date().getFullYear()} ${copyright || 'Shirasawa'}.`}
       </Box>
     </>
   )
