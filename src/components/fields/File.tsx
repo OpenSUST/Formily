@@ -49,7 +49,7 @@ const components: Field<string[]> = {
         for (const k in formData) body.append(k, formData[k])
         body.append('file', dataURItoBlob(it.path))
         await fetch(postURL, { body, method: 'POST' })
-        return postURL + formData.key + '#' + it.name
+        return (postURL.endsWith('/') ? postURL : + '/') + formData.key + '#' + it.name
       })
     ).then(urls => {
       if (!data[keyName] && !urls.length) return
