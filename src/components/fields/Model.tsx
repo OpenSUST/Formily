@@ -125,7 +125,7 @@ const components: Field<string> = {
       for (const k in formData) body.append(k, formData[k])
       body.append('file', dataURItoBlob(ref.current.path))
       await fetch(postURL, { body, method: 'POST' })
-      data[keyName] = (postURL.endsWith('/') ? postURL : + '/') + formData.key + '#' + ref.current.name
+      data[keyName] = (postURL.endsWith('/') ? postURL : postURL + '/') + formData.key + '#' + ref.current.name
     }), [])
 
     const arr = (value || '').split('#')

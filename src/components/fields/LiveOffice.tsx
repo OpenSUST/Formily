@@ -37,7 +37,7 @@ const components: Field<string> = {
       for (const k in formData) body.append(k, formData[k])
       body.append('file', it)
       await fetch(postURL, { body, method: 'POST' })
-      data[keyName] = (postURL.endsWith('/') ? postURL : + '/') + formData.key + '#' + it.name
+      data[keyName] = (postURL.endsWith('/') ? postURL : postURL + '/') + formData.key + '#' + it.name
     }), [])
     return (
       <>
