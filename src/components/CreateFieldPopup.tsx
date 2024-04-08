@@ -19,7 +19,7 @@ import { Kind } from '../types'
 export default React.forwardRef(function CreateFieldPopup (_, ref) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [key, setKey] = React.useState('')
-  const [keyType, setType] = React.useState('')
+  const [keyType, setType] = React.useState('text')
   const client = useApolloClient()
   const { enqueueSnackbar } = useSnackbar()
 
